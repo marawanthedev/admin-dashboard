@@ -5,21 +5,21 @@
 // @author Marwan Mostafa
 // using es6 , fetching and arrow functions
 
-import axios from "axios";
+import axios from 'axios';
 
 class EasyAxios {
-  getUserInAuth = () => {
-    return localStorage.getItem("user") !== undefined
-      ? JSON.parse(localStorage.getItem("user"))
-      : null;
+  static getUserInAuth = () => {
+    return localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null;
   };
+
   getHeader = () => {
     const userInAuth = this.getUserInAuth();
     return {
-      "Content-type": "application/json",
+      'Content-type': 'application/json',
       authorization: userInAuth ? `Bearer ${userInAuth.token}` : null,
     };
   };
+
   // make a http get request
   async get(url) {
     const res = await axios.get(url, {
@@ -39,6 +39,7 @@ class EasyAxios {
     const res = await axios.put(url, data, { headers: this.getHeader() });
     return res;
   }
+
   // delete request
   async delete(url) {
     const res = await axios.delete(url, { headers: this.getHeader() });

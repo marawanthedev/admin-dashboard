@@ -27,17 +27,16 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 
-import { deleteUser, getUsers, editUserRole } from '../redux/features/user/userSlice';
+import { getShops, deleteShop, editShopInfo } from '../redux/features/shops/shopSlice';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'phoneNumber', label: 'Phone Number', alignRight: false },
-  { id: 'email', label: 'Email', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'friendsNumber', label: 'Friends No.', alignRight: false },
-  { id: 'giftsSentNumber', label: 'Gifts Sent', alignRight: false },
-  { id: 'giftsReceivedNumber', label: 'Gifts Received.', alignRight: false },
+  { id: 'handle', label: 'Handle', alignRight: false },
+  { id: 'collection', label: 'Collection ', alignRight: false },
+  { id: 'description', label: 'Description', alignRight: false },
+  { id: 'tagline', label: 'Tag Line', alignRight: false },
+  { id: 'address', label: 'Address', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -71,7 +70,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
+export default function Shop() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -83,8 +82,6 @@ export default function User() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [filteredUser, setFilteredUsers] = useState([]);
 
   const rowMenuButtonItems = [
     {
@@ -105,7 +102,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = shops.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -113,10 +110,10 @@ export default function User() {
   };
 
   const handleItemEdit = (currentItemID, role) => {
-    dispatch(editUserRole({ currentItemID, role }));
+    dispatch(editShopInfo({ data: 'x' }));
   };
   const handleItemDelete = (currentItemID) => {
-    dispatch(deleteUser(currentItemID));
+    dispatch(deleteShop(currentItemID));
   };
 
   const handleClick = (event, name) => {
@@ -149,19 +146,19 @@ export default function User() {
 
   const dispatch = useDispatch();
 
-  const { users } = useSelector((state) => state.user);
+  const { shops } = useSelector((state) => state.shop);
 
   useEffect(() => {
-    dispatch(getUsers());
+    dispatch(getShops());
   }, []);
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - shops.length) : 0;
 
   // console.log(users);
 
-  const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
+  const filteredShops = applySortFilter(shops, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredShops.length === 0;
 
   return (
     <Page title="User">
@@ -170,8 +167,8 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:file-add-outline" />}>
-            Import Users
+          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
+            New User
           </Button>
         </Stack>
 
@@ -185,15 +182,14 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={users.length}
+                  rowCount={shops.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, name, role, phoneNumber, email, friendsNumber, giftsSentNumber, giftsReceivedNumber } =
-                      row;
+                  {filteredShops.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    const { id, name, handle, collection, description, tagline, address } = row;
                     const isItemSelected = selected.indexOf(name) !== -1;
 
                     return (
@@ -215,12 +211,11 @@ export default function User() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{phoneNumber}</TableCell>
-                        <TableCell align="left">{email}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{friendsNumber}</TableCell>
-                        <TableCell align="left">{giftsSentNumber}</TableCell>
-                        <TableCell align="left">{giftsReceivedNumber}</TableCell>
+                        <TableCell align="left">{handle}</TableCell>
+                        <TableCell align="left">{collection}</TableCell>
+                        <TableCell align="left">{description}</TableCell>
+                        <TableCell align="left">{tagline}</TableCell>
+                        <TableCell align="left">{address}</TableCell>
 
                         {/* <TableCell align="left">
                           <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
@@ -257,7 +252,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={users.length}
+            count={shops.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
