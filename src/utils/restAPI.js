@@ -8,9 +8,8 @@
 import axios from 'axios';
 
 class EasyAxios {
-  static getUserInAuth = () => {
-    return localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null;
-  };
+  static getUserInAuth = () =>
+    localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null;
 
   getHeader = () => {
     const userInAuth = this.getUserInAuth();

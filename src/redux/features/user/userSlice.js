@@ -21,7 +21,10 @@ export const editUserRole = createAsyncThunk('editUserRole', async (data) => {
   const result = userService.editUserRole(data);
   return result;
 });
-
+export const addUsersCSV = createAsyncThunk('addUsersCSV', async (data) => {
+  const result = await userService.addUsersCSV(data);
+  return result;
+});
 export const usersSlice = createSlice({
   name: 'users',
   initialState: initState,
@@ -61,6 +64,18 @@ export const usersSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(editUserRole.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(addUsersCSV.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addUsersCSV.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.users = action.payload;
+      })
+      .addCase(addUsersCSV.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
       });

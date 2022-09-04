@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Menu, MenuItem, IconButton, ListItemText } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
 
@@ -27,11 +27,11 @@ export default function UserMoreMenu({ menuItems, currentItemID }) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {menuItems.map((menuItem) => {
+        {menuItems.map((menuItem, index) => {
           if (menuItem.to !== undefined && menuItem.to !== null) {
             return (
-              <MenuItem component={RouterLink} to={`${menuItem.to}`} sx={{ color: 'text.secondary' }}>
-                <ListItemText primary={`${menuItem.text}`} primaryTypographyProps={{ variant: 'body2' }} />
+              <MenuItem key={index} component={RouterLink} to={`${menuItem.to}`} sx={{ color: 'text.secondary' }}>
+                <ListItemText key={index} primary={`${menuItem.text}`} primaryTypographyProps={{ variant: 'body2' }} />
               </MenuItem>
             );
           }

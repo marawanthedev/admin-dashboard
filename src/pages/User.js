@@ -4,6 +4,7 @@ import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { csv } from 'd3';
 // material
 import {
   Card,
@@ -18,7 +19,13 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  Grid,
 } from '@mui/material';
+
+// import csvFile
+
+import importCsvFile from '../utils/importCsvFile';
+
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -26,8 +33,12 @@ import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
+import { deleteUser, getUsers, editUserRole, addUsersCSV } from '../redux/features/user/userSlice';
 
-import { deleteUser, getUsers, editUserRole } from '../redux/features/user/userSlice';
+// export to csv
+
+import exportToCsv from '../utils/exportToCsv';
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -84,7 +95,9 @@ export default function User() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [filteredUser, setFilteredUsers] = useState([]);
+  // file reader setup
+
+  const [file, setFile] = useState();
 
   const rowMenuButtonItems = [
     {
@@ -147,6 +160,17 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
+  const handleFileUpload = (e) => {
+    const filePath = e.target.value;
+    console.log(e.target);
+    console.log(filePath);
+    // const data=await importCsvFile()
+    csv(filePath).then((data) => {
+      console.log(data);
+      dispatch(addUsersCSV(data));
+    });
+  };
+
   const dispatch = useDispatch();
 
   const { users } = useSelector((state) => state.user);
@@ -156,8 +180,6 @@ export default function User() {
   }, []);
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
-
-  // console.log(users);
 
   const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
 
@@ -170,9 +192,34 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:file-add-outline" />}>
-            Import Users
-          </Button>
+          <Grid container item xs={4}>
+            <Grid item margin={2}>
+              <form>
+                <Button
+                  variant="contained"
+                  component="label"
+                  to="#"
+                  startIcon={<Iconify icon="eva:file-add-outline" />}
+                >
+                  <input type={'file'} accept={'.csv'} hidden onChange={handleFileUpload} />
+                  Import Users
+                </Button>
+              </form>
+            </Grid>
+            {users.length !== 0 ? (
+              <Grid item margin={2}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  to="#"
+                  startIcon={<Iconify icon="eva:download-outline" />}
+                  onClick={() => exportToCsv({ fileName: 'Users', data: users })}
+                >
+                  Export Users
+                </Button>
+              </Grid>
+            ) : null}
+          </Grid>
         </Stack>
 
         <Card>

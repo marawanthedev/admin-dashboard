@@ -3,7 +3,7 @@
 //  @access Public
 
 //  *Assert guide, (assertionFactor,DataToBeReturned,errorMessage,res object)
-function assert(assertionFactor, dataToBeReturned, errorMessage, res) {
+function assert(assertionFactor, dataToBeReturned, errorMessage) {
   if (
     assertionFactor !== undefined &&
     assertionFactor !== null &&
