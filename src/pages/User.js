@@ -22,6 +22,8 @@ import {
   Grid,
 } from '@mui/material';
 
+import FilterDropDown from '../components/filterByButtonGroup';
+
 // import csvFile
 
 import importCsvFile from '../utils/importCsvFile';
@@ -162,9 +164,7 @@ export default function User() {
 
   const handleFileUpload = (e) => {
     const filePath = e.target.value;
-    console.log(e.target);
-    console.log(filePath);
-    // const data=await importCsvFile()
+
     csv(filePath).then((data) => {
       console.log(data);
       dispatch(addUsersCSV(data));
@@ -223,8 +223,12 @@ export default function User() {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
-
+          <UserListToolbar
+            onFilterList={() => console.log('hi')}
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+          />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>

@@ -1,10 +1,12 @@
+import { useState } from 'react';
+
 import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Grid } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
-
+import FilterByButtonGroup from '../../../components/filterByButtonGroup';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Toolbar)(({ theme }) => ({
@@ -35,7 +37,8 @@ UserListToolbar.propTypes = {
   onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName, onFilterList }) {
+  const [showFilterPopUp, setShowFilterPopUp] = useState(null);
   return (
     <RootStyle
       sx={{
@@ -69,7 +72,19 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        // <>
+        //   <Grid container item sx={4} justifyContent={'flex-end'}>
+        //     <Grid item marginRight={3}>
+        //       <Typography variant="h4" component="h4">
+        //         Filter By Role
+        //       </Typography>
+        //     </Grid>
+        //     <Grid item>
+        //       <FilterByButtonGroup />
+        //     </Grid>
+        //   </Grid>
+        // </>
+        <Tooltip title="Filter list" onClick={onFilterList}>
           <IconButton>
             <Iconify icon="ic:round-filter-list" />
           </IconButton>

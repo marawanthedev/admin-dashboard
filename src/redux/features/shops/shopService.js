@@ -22,6 +22,9 @@ const getShops = async () => {
 
 const addShop = async () => {
   // http call
+  // new shop data here
+  // posted  to api later
+  return shops;
 };
 const deleteShop = async (userID) => {
   const remainingUsers = shops.filter((user) => user.id !== userID);
@@ -29,6 +32,8 @@ const deleteShop = async (userID) => {
 };
 const editShopInfo = async (data) => {
   // edit shop
+  // edited shop data here
+  // posted to api later
 };
 const shopService = {
   // functions

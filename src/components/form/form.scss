@@ -1,0 +1,22 @@
+.form__action__button {
+  margin-top: 2rem;
+}
+.form-container {
+  background-color: #1890ff;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: center;
+  &__flex {
+    background-color: white;
+    height: 99vh;
+    width: 100%;
+    border-radius: 10px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1rem 0;
+  }
+}

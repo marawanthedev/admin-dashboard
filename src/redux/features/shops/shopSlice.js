@@ -17,6 +17,7 @@ export const deleteShop = createAsyncThunk('deleteShops', async (data) => {
   const result = shopService.deleteShop(data);
   return result;
 });
+
 export const editShopInfo = createAsyncThunk('editUserRole', async (data) => {
   const result = shopService.editShopInfo(data);
   return result;
