@@ -13,7 +13,7 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function RegisterForm() {
+export default function RegisterForm({ onFormSubmission }) {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -39,11 +39,13 @@ export default function RegisterForm() {
 
   const {
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
-    navigate('/dashboard', { replace: true });
+  const onSubmit = async (formValues) => {
+    reset();
+    onFormSubmission({ ...formValues });
   };
 
   return (

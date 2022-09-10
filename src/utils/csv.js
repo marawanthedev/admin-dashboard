@@ -1,4 +1,6 @@
-export default function exportToCsv({ fileName, data }) {
+import { csv } from 'd3';
+
+function exportToCsv({ fileName, data }) {
   if (data !== undefined && data !== null && data.length !== 0) {
     let csvContent = 'data:text/csv;charset=utf-8,';
 
@@ -20,3 +22,17 @@ export default function exportToCsv({ fileName, data }) {
   }
   return null;
 }
+
+const importCSV = (filePath) => {
+  console.log(filePath);
+  csv(filePath).then((data) => {
+    return data;
+  });
+};
+
+const csvService = {
+  exportToCsv,
+  importCSV,
+};
+
+export default csvService;

@@ -10,23 +10,25 @@ RHFTextField.propTypes = {
   name: PropTypes.string,
 };
 
-export default function RHFTextField({ name, ...other }) {
+export default function RHFTextField({ name, customOnChange, ...other }) {
   const { control } = useFormContext();
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
-        <TextField
-          {...field}
-          fullWidth
-          value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
-          error={!!error}
-          helperText={error?.message}
-          {...other}
-        />
-      )}
+      render={({ field, fieldState: { error } }) => {
+        return (
+          <TextField
+            {...field}
+            fullWidth
+            value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
+            error={!!error}
+            helperText={error?.message}
+            {...other}
+          />
+        );
+      }}
     />
   );
 }

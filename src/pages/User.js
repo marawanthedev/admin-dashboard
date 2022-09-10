@@ -1,10 +1,7 @@
 // redux
 import { useDispatch, useSelector } from 'react-redux';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { csv } from 'd3';
 // material
 import {
   Card,
@@ -24,9 +21,7 @@ import {
 
 import FilterDropDown from '../components/filterByButtonGroup';
 
-// import csvFile
-
-import importCsvFile from '../utils/importCsvFile';
+import csvService from '../utils/csv';
 
 // components
 import Page from '../components/Page';
@@ -38,8 +33,6 @@ import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashbo
 import { deleteUser, getUsers, editUserRole, addUsersCSV } from '../redux/features/user/userSlice';
 
 // export to csv
-
-import exportToCsv from '../utils/exportToCsv';
 
 // ----------------------------------------------------------------------
 
@@ -162,13 +155,10 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const filePath = e.target.value;
-
-    csv(filePath).then((data) => {
-      console.log(data);
-      dispatch(addUsersCSV(data));
-    });
+    const data = await csvService.importCSV(filePath);
+    dispatch(addUsersCSV(data));
   };
 
   const dispatch = useDispatch();
@@ -192,8 +182,8 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-          <Grid container item xs={4}>
-            <Grid item margin={2}>
+          <Grid container item xs={8} lg={3.5} justifyContent="flex-end" alignItems={'center'}>
+            <Grid item xs={8} lg={6} mb={1}>
               <form>
                 <Button
                   variant="contained"
@@ -207,13 +197,13 @@ export default function User() {
               </form>
             </Grid>
             {users.length !== 0 ? (
-              <Grid item margin={2}>
+              <Grid item xs={8} lg={6} mb={1}>
                 <Button
                   variant="contained"
                   component="label"
                   to="#"
                   startIcon={<Iconify icon="eva:download-outline" />}
-                  onClick={() => exportToCsv({ fileName: 'Users', data: users })}
+                  onClick={() => csvService.exportToCsv({ fileName: 'Users', data: users })}
                 >
                   Export Users
                 </Button>
@@ -228,6 +218,7 @@ export default function User() {
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
+            placeHolder="Search user .."
           />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
