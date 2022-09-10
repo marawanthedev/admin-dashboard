@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { sample } from 'lodash';
-import { http } from '../../../utils/restAPI';
-import assert from '../../../utils/assertion';
+// import { sample } from 'lodash';
+// import { http } from '../../../utils/restAPI';
+// import assert from '../../../utils/assertion';
 // import users from '../../../_mock/user';
 
-const shops = [...Array(24)].map((_, index) => ({
+const shops = [...Array(24)].map(() => ({
   id: faker.datatype.uuid(),
   name: faker.name.findName(),
   handle: faker.random.word(),
@@ -16,16 +16,10 @@ const shops = [...Array(24)].map((_, index) => ({
 
 // const BASE_URL = '';
 
-const getShops = async () => {
-  return shops;
-};
+const getShops = async () => shops;
+const addShop = async () => shops;
 
-const addShop = async () => {
-  // http call
-  // new shop data here
-  // posted  to api later
-  return shops;
-};
+
 const deleteShop = async (userID) => {
   const remainingUsers = shops.filter((user) => user.id !== userID);
   return remainingUsers;

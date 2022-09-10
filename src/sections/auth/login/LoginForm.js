@@ -13,7 +13,7 @@ import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hoo
 
 // ----------------------------------------------------------------------
 
-export default function LoginForm() {
+export default function LoginForm({ onFormSubmission }) {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,11 +36,12 @@ export default function LoginForm() {
 
   const {
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
-    navigate('/dashboard', { replace: true });
+  const onSubmit = async (formValues) => {
+    onFormSubmission({ ...formValues, name: 'Marwan' });
   };
 
   return (

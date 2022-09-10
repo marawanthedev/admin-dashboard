@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
@@ -32,7 +33,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const anchorRef = useRef(null);
-
+  const { userInAuth } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -45,6 +46,9 @@ export default function AccountPopover() {
 
   return (
     <>
+      <Typography variant="h6" color="black">
+        {userInAuth?.name}
+      </Typography>
       <IconButton
         ref={anchorRef}
         onClick={handleOpen}
@@ -65,7 +69,6 @@ export default function AccountPopover() {
       >
         <Avatar src={account.photoURL} alt="photoURL" />
       </IconButton>
-
       <MenuPopover
         open={Boolean(open)}
         anchorEl={open}

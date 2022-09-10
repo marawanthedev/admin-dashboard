@@ -1,9 +1,7 @@
 // redux
 import { useDispatch, useSelector } from 'react-redux';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
   Card,
@@ -21,25 +19,34 @@ import {
   Grid,
 } from '@mui/material';
 
+import FilterDropDown from '../components/filterByButtonGroup';
+
 import csvService from '../utils/csv';
 
 // components
 import Page from '../components/Page';
-import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
-import { getShops, deleteShop, editShopInfo } from '../redux/features/shops/shopSlice';
+import { getOrders } from '../redux/features/order/orderSlice';
+
+// export to csv
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'handle', label: 'Handle', alignRight: false },
-  { id: 'collection', label: 'Collection ', alignRight: false },
-  { id: 'description', label: 'Description', alignRight: false },
-  { id: 'tagline', label: 'Tag Line', alignRight: false },
-  { id: 'address', label: 'Address', alignRight: false },
+  { id: 'id', label: 'Id', alignRight: false },
+  { id: 'status', label: 'Status', alignRight: false },
+  { id: 'user', label: 'User', alignRight: false },
+  { id: 'shop', label: 'shop', alignRight: false },
+  { id: 'recipientsName', label: 'recipients name ', alignRight: false },
+  { id: 'recipientsAddress', label: 'recipients address', alignRight: false },
+  { id: 'recipientsType', label: 'recipients type', alignRight: false },
+  { id: 'quantity', label: 'quantity ', alignRight: false },
+  { id: 'totalPrice', label: 'total price', alignRight: false },
+  { id: 'paid', label: 'paid', alignRight: false },
+  { id: 'orderNo', label: 'order no', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -68,12 +75,12 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_item) => _item.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_item) => _item.status.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function Shop() {
+export default function Orders() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -82,20 +89,13 @@ export default function Shop() {
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterName, setFilterName] = useState('');
+  const [filterValue, setFilterValue] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const rowMenuButtonItems = [
-    {
-      text: 'Delete',
-      callback: (currentItemID) => handleItemDelete(currentItemID),
-    },
-    {
-      text: 'Edit Role',
-      callback: (currentItemID) => handleItemEdit(currentItemID, 'Customer'),
-    },
-  ];
+  // file reader setup
+
+  const [file, setFile] = useState();
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -105,18 +105,11 @@ export default function Shop() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = shops.map((n) => n.name);
+      const newSelecteds = orders.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
-  };
-
-  const handleItemEdit = (currentItemID, role) => {
-    dispatch(editShopInfo({ data: 'x' }));
-  };
-  const handleItemDelete = (currentItemID) => {
-    dispatch(deleteShop(currentItemID));
   };
 
   const handleClick = (event, name) => {
@@ -143,25 +136,9 @@ export default function Shop() {
     setPage(0);
   };
 
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+  const handleFilter = (event) => {
+    setFilterValue(event.target.value);
   };
-
-  const dispatch = useDispatch();
-
-  const { shops } = useSelector((state) => state.shop);
-
-  useEffect(() => {
-    dispatch(getShops());
-  }, []);
-
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - shops.length) : 0;
-
-  // console.log(users);
-
-  const filteredShops = applySortFilter(shops, getComparator(order, orderBy), filterName);
-
-  const isUserNotFound = filteredShops.length === 0;
 
   const handleFileUpload = async (e) => {
     const filePath = e.target.value;
@@ -169,38 +146,29 @@ export default function Shop() {
     // dispatch(addUsersCSV(data));
   };
 
+  const dispatch = useDispatch();
+
+  const { orders } = useSelector((state) => state.order);
+
+  useEffect(() => {
+    dispatch(getOrders());
+  }, []);
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - orders.length) : 0;
+
+  const filteredOrders = applySortFilter(orders, getComparator(order, orderBy), filterValue);
+
+  const isOrderNotFound = filteredOrders.length === 0;
+
   return (
-    <Page title="Shop">
+    <Page title="Orders">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             User
           </Typography>
-
-          <Grid container item xs={9} lg={6} justifyContent="flex-end" alignItems={'center'}>
-            <Grid item xs={7} lg={3.5} mb={1}>
-              <Button
-                variant="contained"
-                component={RouterLink}
-                to="/shopform"
-                startIcon={<Iconify icon="eva:plus-fill" />}
-              >
-                Add Shop
-              </Button>
-            </Grid>
-            <Grid item xs={7} lg={3.5} mb={1}>
-              <Button
-                variant="contained"
-                component="label"
-                to="#"
-                startIcon={<Iconify icon="eva:download-outline" />}
-                onClick={() => csvService.exportToCsv({ fileName: 'Shops', data: shops })}
-              >
-                Export Shops
-              </Button>
-            </Grid>
-
-            <Grid item xs={7} lg={3.5} mb={1}>
+          <Grid container item xs={8} lg={3.5} justifyContent="flex-end" alignItems={'center'}>
+            <Grid item xs={8} lg={6} mb={1}>
               <form>
                 <Button
                   variant="contained"
@@ -209,21 +177,34 @@ export default function Shop() {
                   startIcon={<Iconify icon="eva:file-add-outline" />}
                 >
                   <input type={'file'} accept={'.csv'} hidden onChange={handleFileUpload} />
-                  Import Shops
+                  Import Orders
                 </Button>
               </form>
             </Grid>
+            {orders.length !== 0 ? (
+              <Grid item xs={8} lg={6} mb={1}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  to="#"
+                  startIcon={<Iconify icon="eva:download-outline" />}
+                  onClick={() => csvService.exportToCsv({ fileName: 'orders', data: orders })}
+                >
+                  Export Orders
+                </Button>
+              </Grid>
+            ) : null}
           </Grid>
         </Stack>
 
         <Card>
           <UserListToolbar
-            placeHolder={'Search shop ..'}
+            onFilterList={() => console.log('hi')}
             numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
+            filterName={filterValue}
+            onFilterName={handleFilter}
+            placeHolder={'Search By order Status'}
           />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -231,15 +212,27 @@ export default function Shop() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={shops.length}
+                  rowCount={orders.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredShops.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, name, handle, collection, description, tagline, address } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    const {
+                      id,
+                      status,
+                      user,
+                      shop,
+                      recipientsName,
+                      recipientsAddress,
+                      recipientsType,
+                      quantity,
+                      totalPrice,
+                      paid,
+                      orderNo,
+                    } = row;
+                    const isItemSelected = selected.indexOf(status) !== -1;
 
                     return (
                       <TableRow
@@ -251,29 +244,31 @@ export default function Shop() {
                         aria-checked={isItemSelected}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, status)} />
                         </TableCell>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {id}
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{handle}</TableCell>
-                        <TableCell align="left">{collection}</TableCell>
-                        <TableCell align="left">{description}</TableCell>
-                        <TableCell align="left">{tagline}</TableCell>
-                        <TableCell align="left">{address}</TableCell>
-
+                        <TableCell align="left">{status}</TableCell>
+                        <TableCell align="left">{user}</TableCell>
+                        <TableCell align="left">{shop}</TableCell>
+                        <TableCell align="left">{recipientsName}</TableCell>
+                        <TableCell align="left">{recipientsAddress}</TableCell>
+                        <TableCell align="left">{recipientsType}</TableCell>
+                        <TableCell align="left">{quantity}</TableCell>
+                        <TableCell align="left">{totalPrice}</TableCell> <TableCell align="left">{paid}</TableCell>
+                        <TableCell align="left">{orderNo}</TableCell>
                         {/* <TableCell align="left">
                           <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell> */}
-
                         <TableCell align="right">
-                          <UserMoreMenu currentItemID={id} menuItems={rowMenuButtonItems} />
+                          {/* <UserMoreMenu currentItemID={id} menuItems={rowMenuButtonItems} /> */}
                         </TableCell>
                       </TableRow>
                     );
@@ -285,11 +280,11 @@ export default function Shop() {
                   )}
                 </TableBody>
 
-                {isUserNotFound && (
+                {isOrderNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
+                        <SearchNotFound searchQuery={filterValue} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -301,7 +296,7 @@ export default function Shop() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={shops.length}
+            count={orders.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

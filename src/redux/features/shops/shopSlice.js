@@ -23,7 +23,7 @@ export const editShopInfo = createAsyncThunk('editUserRole', async (data) => {
   return result;
 });
 
-export const usersSlice = createSlice({
+export const shopsSlice = createSlice({
   name: 'shops',
   initialState: initState,
   reducers: {},
@@ -61,11 +61,11 @@ export const usersSlice = createSlice({
         state.isSuccess = true;
         state.shops = action.payload;
       })
-      .addCase(editShopInfo.rejected, (state, action) => {
+      .addCase(editShopInfo.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });
   },
 });
 
-export default usersSlice.reducer;
+export default shopsSlice.reducer;

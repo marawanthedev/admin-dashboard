@@ -25,6 +25,12 @@ export const addUsersCSV = createAsyncThunk('addUsersCSV', async (data) => {
   const result = await userService.addUsersCSV(data);
   return result;
 });
+
+export const registerUser = createAsyncThunk('registerUser', async (userInfo) => {
+  const registeredUser = await userService.registerUser(userInfo);
+  return registeredUser;
+});
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState: initState,
@@ -63,7 +69,7 @@ export const usersSlice = createSlice({
         state.isSuccess = true;
         state.users = action.payload;
       })
-      .addCase(editUserRole.rejected, (state, action) => {
+      .addCase(editUserRole.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       })
@@ -75,7 +81,19 @@ export const usersSlice = createSlice({
         state.isSuccess = true;
         state.users = action.payload;
       })
-      .addCase(addUsersCSV.rejected, (state, action) => {
+      .addCase(addUsersCSV.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.users = action.payload;
+      })
+      .addCase(registerUser.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });
