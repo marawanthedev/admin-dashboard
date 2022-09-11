@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Route, useNavigate } from 'react-router-dom';
 // material
 import {
   Card,
@@ -74,6 +74,8 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function Shop() {
+  const navigate = useNavigate();
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -89,11 +91,11 @@ export default function Shop() {
   const rowMenuButtonItems = [
     {
       text: 'Delete',
-      callback: (currentItemID) => handleItemDelete(currentItemID),
+      callback: (shop) => handleItemDelete(shop),
     },
     {
-      text: 'Edit Role',
-      callback: (currentItemID) => handleItemEdit(currentItemID, 'Customer'),
+      text: 'Edit Shop',
+      callback: (shop) => handleItemEdit(shop),
     },
   ];
 
@@ -112,11 +114,15 @@ export default function Shop() {
     setSelected([]);
   };
 
-  const handleItemEdit = (currentItemID, role) => {
-    dispatch(editShopInfo({ data: 'x' }));
+  const handleItemEdit = (shop) => {
+    navigate('/manage-shop', { state: { mode: 'edit', shop } });
+    // dispatch(editShopInfo({ shopId: currentItemID }));
   };
-  const handleItemDelete = (currentItemID) => {
-    dispatch(deleteShop(currentItemID));
+  const handleShopAddition = () => {
+    navigate('/manage-shop', { state: { mode: 'add' } });
+  };
+  const handleItemDelete = (shop) => {
+    dispatch(deleteShop(shop.id));
   };
 
   const handleClick = (event, name) => {
@@ -179,12 +185,7 @@ export default function Shop() {
 
           <Grid container item xs={9} lg={6} justifyContent="flex-end" alignItems={'center'}>
             <Grid item xs={7} lg={3.5} mb={1}>
-              <Button
-                variant="contained"
-                component={RouterLink}
-                to="/shopform"
-                startIcon={<Iconify icon="eva:plus-fill" />}
-              >
+              <Button onClick={handleShopAddition} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
                 Add Shop
               </Button>
             </Grid>
@@ -273,7 +274,7 @@ export default function Shop() {
                         </TableCell> */}
 
                         <TableCell align="right">
-                          <UserMoreMenu currentItemID={id} menuItems={rowMenuButtonItems} />
+                          <UserMoreMenu currentItem={row} menuItems={rowMenuButtonItems} />
                         </TableCell>
                       </TableRow>
                     );

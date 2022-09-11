@@ -97,11 +97,11 @@ export default function User() {
   const rowMenuButtonItems = [
     {
       text: 'Delete',
-      callback: (currentItemID) => handleItemDelete(currentItemID),
+      callback: (currentItem) => handleItemDelete(currentItem),
     },
     {
       text: 'Edit Role',
-      callback: (currentItemID) => handleItemEdit(currentItemID, 'Customer'),
+      callback: (currentItem) => handleItemEdit(currentItem, 'Customer'),
     },
   ];
 
@@ -120,11 +120,11 @@ export default function User() {
     setSelected([]);
   };
 
-  const handleItemEdit = (currentItemID, role) => {
-    dispatch(editUserRole({ currentItemID, role }));
+  const handleItemEdit = (currentItem, role) => {
+    dispatch(editUserRole({ currentItemID: currentItem.id, role }));
   };
-  const handleItemDelete = (currentItemID) => {
-    dispatch(deleteUser(currentItemID));
+  const handleItemDelete = (currentItem) => {
+    dispatch(deleteUser(currentItem.id));
   };
 
   const handleClick = (event, name) => {
@@ -271,7 +271,7 @@ export default function User() {
                         </TableCell> */}
 
                         <TableCell align="right">
-                          <UserMoreMenu currentItemID={id} menuItems={rowMenuButtonItems} />
+                          <UserMoreMenu currentItem={row} menuItems={rowMenuButtonItems} />
                         </TableCell>
                       </TableRow>
                     );

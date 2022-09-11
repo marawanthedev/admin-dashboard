@@ -7,7 +7,7 @@ import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ menuItems, currentItemID }) {
+export default function UserMoreMenu({ menuItems, currentItem }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,7 +38,7 @@ export default function UserMoreMenu({ menuItems, currentItemID }) {
           return (
             <MenuItem
               sx={{ color: 'text.secondary' }}
-              onClick={() => (menuItem.callback ? menuItem.callback(currentItemID) : null)}
+              onClick={() => (menuItem.callback ? menuItem.callback(currentItem) : null)}
             >
               <ListItemText primary={`${menuItem.text}`} primaryTypographyProps={{ variant: 'body2' }} />
             </MenuItem>

@@ -1,5 +1,4 @@
 // import * as Yup from 'yup';
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './form.scss';
 // form
@@ -28,14 +27,12 @@ export default function Form({
   textInputs,
   formHeader,
   formButton,
-  menuItem,
+  menuItems,
   schema,
   defaultValues,
   onFormSubmission,
 }) {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState(null);
 
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -44,17 +41,14 @@ export default function Form({
 
   const {
     handleSubmit,
-    setValue,
-    register,
-    // trigger,
     reset,
+    register,
+    setValue,
     formState: { isSubmitting, errors },
   } = methods;
 
   const onSubmit = async (formValues) => {
-    reset();
-    console.log(formValues);
-    // onFormSubmission({ ...formValues });
+    onFormSubmission({ ...formValues });
   };
 
   const handleTextInputRendering = () => {
@@ -63,37 +57,48 @@ export default function Form({
     }
   };
 
+  const handleMenuItemRendering = () => {
+    if (menuItems !== undefined && menuItems !== null) {
+      return menuItems.map((menuItem) => (
+        <div className="input-row">
+          {console.log(menuItem.name)}
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">{menuItem?.label}</InputLabel>
+            <Select
+              {...register(`${menuItem.name}`)}
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label={`${menuItem?.label}`}
+              error={errors.select && errors.select.message}
+              onChange={(e) => setValue('select', e.target.value, { shouldValidate: true })}
+            >
+              {menuItem.items.length > 0
+                ? menuItem.items.map((menuItem) => <MenuItem value={menuItem.id}>{menuItem.name}</MenuItem>)
+                : null}
+            </Select>
+            {/* eslint no-restricted-globals: ["error", "event"] */}
+
+            {menuItem.to ? (
+              <Link to={menuItem.to} className="input-row__icon-button">
+                <Iconify icon={'carbon:add-filled'} sx={{ width: 32, height: 32 }} />
+              </Link>
+            ) : null}
+          </FormControl>
+        </div>
+      ));
+    }
+  };
+
   return (
     <div className="form-container">
-      <Container sx={12}>
+      <Container>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Grid className="form-container__flex" container item>
             <Typography variant="h3" component="h3" marginBottom="1rem">
               {formHeader}
             </Typography>
             <Stack spacing={1.5} width={'60%'}>
-              <div className="input-row">
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">{menuItem?.label}</InputLabel>
-                  <Select
-                    {...register('select')}
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label={`${menuItem?.label}`}
-                    error={errors.select && errors.select.message}
-                    onChange={(e) => setValue('select', e.target.value, { shouldValidate: true })}
-                  >
-                    {menuItem.items.length > 0
-                      ? menuItem.items.map((menuItem) => <MenuItem value={menuItem.id}>{menuItem.name}</MenuItem>)
-                      : null}
-                  </Select>
-                  {/* eslint no-restricted-globals: ["error", "event"] */}
-                  <Link to="/register" className="input-row__icon-button">
-                    <Iconify icon={'carbon:add-filled'} sx={{ width: 32, height: 32 }} />
-                  </Link>
-                </FormControl>
-              </div>
-
+              {handleMenuItemRendering()}
               {handleTextInputRendering()}
             </Stack>
 

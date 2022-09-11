@@ -1,8 +1,9 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// form
 import { useForm } from 'react-hook-form';
+
+// form
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
@@ -41,7 +42,9 @@ export default function LoginForm({ onFormSubmission }) {
   } = methods;
 
   const onSubmit = async (formValues) => {
+    reset();
     onFormSubmission({ ...formValues, name: 'Marwan' });
+    navigate('/dashboard/app');
   };
 
   return (

@@ -1,10 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
-// import { sample } from 'lodash';
-// import { http } from '../../../utils/restAPI';
-// import assert from '../../../utils/assertion';
-// import users from '../../../_mock/user';
-// role: sample(['Admin', 'Customer', 'Seller']),
 import userService from '../user/userService';
 import shopService from '../shops/shopService';
 
