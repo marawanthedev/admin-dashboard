@@ -1,27 +1,26 @@
 // import * as Yup from 'yup';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './form.scss';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import {
-  Stack,
-  Container,
-  Grid,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-} from '@mui/material';
+import { Stack, Container, Grid, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
+import PropTypes from 'prop-types';
 import Iconify from '../Iconify';
-import { FormProvider, RHFTextField, RHFCheckbox } from '../hook-form';
+import { FormProvider, RHFTextField } from '../hook-form';
 
-// ----------------------------------------------------------------------
+Form.propTypes = {
+  textInputs: PropTypes.array,
+  formHeader: PropTypes.string,
+  menuItems: PropTypes.array,
+  schema: PropTypes.object,
+  defaultValues: PropTypes.object,
+  onFormSubmission: PropTypes.func,
+  formButton: PropTypes.object,
+}; // ----------------------------------------------------------------------
 
 export default function Form({
   textInputs,
@@ -32,8 +31,6 @@ export default function Form({
   defaultValues,
   onFormSubmission,
 }) {
-  const navigate = useNavigate();
-
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues,
@@ -41,7 +38,6 @@ export default function Form({
 
   const {
     handleSubmit,
-    reset,
     register,
     setValue,
     formState: { isSubmitting, errors },
@@ -53,15 +49,17 @@ export default function Form({
 
   const handleTextInputRendering = () => {
     if (textInputs.length !== 0) {
-      return textInputs.map((textInput) => <RHFTextField name={textInput.name} label={textInput.label} />);
+      return textInputs.map((textInput, index) => (
+        <RHFTextField key={index} name={textInput.name} label={textInput.label} />
+      ));
     }
+    return null;
   };
 
   const handleMenuItemRendering = () => {
     if (menuItems !== undefined && menuItems !== null) {
-      return menuItems.map((menuItem) => (
-        <div className="input-row">
-          {console.log(menuItem.name)}
+      return menuItems.map((menuItem, index) => (
+        <div className="input-row" key={index}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">{menuItem?.label}</InputLabel>
             <Select
@@ -73,7 +71,11 @@ export default function Form({
               onChange={(e) => setValue('select', e.target.value, { shouldValidate: true })}
             >
               {menuItem.items.length > 0
-                ? menuItem.items.map((menuItem) => <MenuItem value={menuItem.id}>{menuItem.name}</MenuItem>)
+                ? menuItem.items.map((menuItem, index) => (
+                    <MenuItem key={index} value={menuItem.id}>
+                      {menuItem.name}
+                    </MenuItem>
+                  ))
                 : null}
             </Select>
             {/* eslint no-restricted-globals: ["error", "event"] */}
@@ -87,6 +89,7 @@ export default function Form({
         </div>
       ));
     }
+    return null;
   };
 
   return (

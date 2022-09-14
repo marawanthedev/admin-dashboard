@@ -1,12 +1,11 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 
 import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Grid } from '@mui/material';
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
-import FilterByButtonGroup from '../../../components/filterByButtonGroup';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Toolbar)(({ theme }) => ({
@@ -33,12 +32,20 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 
 UserListToolbar.propTypes = {
   numSelected: PropTypes.number,
-  filterName: PropTypes.string,
-  onFilterName: PropTypes.func,
+  filterAttribute: PropTypes.string,
+  onFilterAttribute: PropTypes.func,
+  onFilterList: PropTypes.func,
+  placeHolder: PropTypes.string,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName, onFilterList, placeHolder }) {
-  const [showFilterPopUp, setShowFilterPopUp] = useState(null);
+export default function UserListToolbar({
+  numSelected,
+  filterAttribute,
+  onFilterAttribute,
+  onFilterList,
+  placeHolder,
+}) {
+  // const [showFilterPopUp, setShowFilterPopUp] = useState(null);
   return (
     <RootStyle
       sx={{
@@ -54,8 +61,8 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName,
         </Typography>
       ) : (
         <SearchStyle
-          value={filterName}
-          onChange={onFilterName}
+          value={filterAttribute}
+          onChange={onFilterAttribute}
           placeholder={placeHolder}
           startAdornment={
             <InputAdornment position="start">

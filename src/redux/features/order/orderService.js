@@ -10,10 +10,10 @@ const orders = [...Array(24)].map(() => ({
   shop: sample(['x', 'y', 'z']),
   recipientsName: faker.random.word(),
   recipientsAddress: faker.random.word(),
-  recipientsType: sample['me,recrave,offline'],
+  recipientsType: sample(['me', 'recrave', 'seller']),
   quantity: faker.random.numeric(),
   totalPrice: faker.random.numeric(),
-  paid: sample[('yes', 'no')],
+  paid: sample(['yes', 'no']),
   orderNo: faker.random.numeric(),
 }));
 

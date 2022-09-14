@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import { addShop, editShopInfo } from '../redux/features/shops/shopSlice';
@@ -48,13 +46,15 @@ export default function ShopForm() {
 
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.user);
+
+  /* eslint-disable */
   useEffect(() => {
     if (mode === 'add') {
       dispatch(getUsers());
     }
   }, []);
+  /* eslint-enable */
 
-  console.log(mode);
   const menuItems =
     mode === undefined || mode !== 'edit'
       ? [
