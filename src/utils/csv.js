@@ -23,12 +23,7 @@ function exportToCsv({ fileName, data }) {
   return null;
 }
 
-const importCSV = (filePath) => {
-  console.log(filePath);
-  csv(filePath).then((data) => {
-    return data;
-  });
-};
+const importCSV = (filePath) => csv(filePath).then((data) => data);
 
 const csvService = {
   exportToCsv,
