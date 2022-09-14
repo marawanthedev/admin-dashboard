@@ -25,7 +25,7 @@ export default function Logo({ disabledLink = false, sx }) {
 
   const logo = (
     <Box sx={{ width: 100, height: 100, ...sx }}>
-      <img src={recraveLogo} alt="logo" />
+      <img src={recraveLogo} alt="logo" style={{ caretColor: 'transparent' }} />
     </Box>
   );
 
