@@ -35,7 +35,7 @@ const textInputs = [
 
 export default function ShopForm() {
   const location = useLocation();
-  const mode = location?.state?.mode;
+  const mode = location.state?.mode ? location.state?.mode : 'add';
   const shopInfo = mode === 'edit' ? location.state.shop : null;
 
   const formHeader = mode && mode === 'edit' ? 'Shop update' : 'Shop Registration';
@@ -49,6 +49,7 @@ export default function ShopForm() {
 
   /* eslint-disable */
   useEffect(() => {
+    console.log(mode);
     if (mode === 'add') {
       dispatch(getUsers());
     }

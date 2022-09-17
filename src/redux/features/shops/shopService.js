@@ -22,7 +22,6 @@ const shops = [...Array(24)].map(() => ({
 const getShops = async () => shops;
 const addShop = async (newShop) => {
   console.log('adding shop');
-
   const updatedShops = shops.push(newShop);
   return updatedShops;
 };
@@ -35,14 +34,22 @@ const editShopInfo = async (data) => {
   // edit shop
   // edited shop data here
   // posted to api later
+  console.log(data);
   console.log('editing shop');
 };
+const filterByDate = async (date) => {
+  console.log(`filtering by date of ${date}`);
+  // todo filter by api call
+  return users;
+};
+
 const shopService = {
   // functions
   addShop,
   getShops,
   deleteShop,
   editShopInfo,
+  filterByDate,
 };
 
 export default shopService;

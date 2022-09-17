@@ -13,7 +13,7 @@ const products = [...Array(24)].map(() => ({
   quantity: faker.datatype.number(),
   category: sample(['food', 'fashion', 'homemade']),
   shopHandle: sample([...shopsHandle]),
-  availability: sample(['available', 'not available']),
+  availability: sample(['available', 'not-available']),
   shippingDetails: faker.random.words(),
 }));
 
@@ -24,8 +24,10 @@ const addProduct = async (newProduct) => {
   const newProducts = products.push(newProduct);
   return newProducts;
 };
-const editProduct = async (editedProduct) => {
+const editProduct = async (updatedProduct) => {
   console.log('edit product');
+  console.log(updatedProduct);
+  return products;
 };
 
 const deleteProduct = async (productId) => {
@@ -35,6 +37,12 @@ const deleteProduct = async (productId) => {
 
 const archiveProduct = async (productId) => {
   console.log('archive product');
+  console.log(productId);
+  return products;
+};
+const filterByAvailability = async (availability) => {
+  const filteredUProducts = products.filter((product) => product.availability === availability);
+  return filteredUProducts;
 };
 const orderService = {
   getProducts,
@@ -42,6 +50,7 @@ const orderService = {
   addProduct,
   editProduct,
   deleteProduct,
+  filterByAvailability,
 };
 
 export default orderService;

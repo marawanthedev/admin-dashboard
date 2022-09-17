@@ -38,7 +38,12 @@ export default function UserMoreMenu({ menuItems, currentItem }) {
           return (
             <MenuItem
               sx={{ color: 'text.secondary' }}
-              onClick={() => (menuItem.callback ? menuItem.callback(currentItem) : null)}
+              onClick={() => {
+                if (menuItem.callback) {
+                  setIsOpen(false);
+                  menuItem.callback(currentItem);
+                }
+              }}
             >
               <ListItemText primary={`${menuItem.text}`} primaryTypographyProps={{ variant: 'body2' }} />
             </MenuItem>

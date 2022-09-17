@@ -6,7 +6,6 @@ import {
   Table,
   Stack,
   Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -34,9 +33,12 @@ CustomTable.propTypes = {
   topButtons: PropTypes.array,
   sideButtons: PropTypes.array,
   items: PropTypes.array,
-  // filterMenu: PropTypes.array,
   showId: PropTypes.bool,
   head: PropTypes.string,
+  searchPlaceHolder: PropTypes.string,
+  filterButtonCallBack: PropTypes.func,
+  page: PropTypes.number,
+  pageCallBack: PropTypes.func,
 };
 
 export default function CustomTable({
@@ -46,14 +48,15 @@ export default function CustomTable({
   sideButtons,
   head,
   items,
-  // filterMenu,
   showId,
+  searchPlaceHolder,
+  filterButtonCallBack,
+  page,
+  pageCallBack,
 }) {
-  const [page, setPage] = useState(0);
+  // const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('name');
 
@@ -67,37 +70,13 @@ export default function CustomTable({
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = items.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    pageCallBack(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    pageCallBack(0);
   };
 
   const handleFilterByAttribute = (event) => {
@@ -138,7 +117,7 @@ export default function CustomTable({
       return topButtons.map((button) => {
         if ((button.text.includes('export') && items.length > 0) || !button.text.includes('export')) {
           return (
-            <Grid item xs={8} lg={6} mb={1}>
+            <Grid item xs={8} lg={topButtons.length > 2 ? 7 : 7} mb={1}>
               <form>
                 <Button
                   variant="contained"
@@ -167,7 +146,7 @@ export default function CustomTable({
     Object.keys(row).map((key, index) => {
       if (index === 0) {
         return (
-          <TableCell key={index} component="th" scope="row" padding="none">
+          <TableCell key={index} align="start">
             {row[key]}
           </TableCell>
         );
@@ -198,27 +177,18 @@ export default function CustomTable({
 
         <Card>
           <UserListToolbar
-            onFilterList={() => console.log('hi')}
-            numSelected={selected.length}
+            onFilterClick={filterButtonCallBack}
             filterAttribute={filterAttribute}
             onFilterAttribute={handleFilterByAttribute}
-            placeHolder={`Search  ${searchAttribute ? `by ${searchAttribute}` : null}`}
+            placeHolder={`Search  ${searchPlaceHolder ? `by ${searchPlaceHolder}` : title}`}
           />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <TableListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={head}
-                  rowCount={items.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
+                <TableListHead order={order} orderBy={orderBy} headLabel={head} onRequestSort={handleRequestSort} />
                 <TableBody>
                   {filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name } = row;
+                    const { id } = row;
                     const rowDisplayInfo = JSON.parse(JSON.stringify(row));
                     if (!showId) {
                       delete rowDisplayInfo.id;
@@ -226,20 +196,8 @@ export default function CustomTable({
                     // todo remove after fetch from api
                     delete rowDisplayInfo.password;
 
-                    const isItemSelected = selected.indexOf(name) !== -1;
-
                     return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox">
                         {handleTableRendering(rowDisplayInfo)}
                         <TableCell align="right">
                           <UserMoreMenu currentItem={row} menuItems={sideButtons} />

@@ -3,7 +3,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 //
-import User from './pages/User';
+import User from './pages/User/User';
 import Shop from './pages/Shop';
 import Login from './pages/Login';
 import NotFound from './pages/Page404';
@@ -13,6 +13,8 @@ import DashboardApp from './pages/DashboardApp';
 import ShopForm from './pages/shopForm';
 import Orders from './pages/Order';
 import ProductForm from './pages/productForm';
+import CategoryForm from './pages/categoryForm';
+import Category from './pages/Category';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -25,6 +27,7 @@ export default function Router() {
         { path: 'user', element: <User /> },
         { path: 'shop', element: <Shop /> },
         { path: 'orders', element: <Orders /> },
+        { path: 'category', element: <Category /> },
         { path: 'products', element: <Products /> },
       ],
     },
@@ -39,6 +42,10 @@ export default function Router() {
     {
       path: 'manage-product',
       element: <ProductForm />,
+    },
+    {
+      path: 'manage-category',
+      element: <CategoryForm />,
     },
     {
       path: 'register',

@@ -28,6 +28,11 @@ export const editShopInfo = createAsyncThunk('editUserRole', async (data) => {
   return result;
 });
 
+export const filterByDate = createAsyncThunk('filterByDate', async (date) => {
+  const filteredUsers = await shopService.filterByDate(date);
+  return filteredUsers;
+});
+
 export const shopsSlice = createSlice({
   name: 'shops',
   initialState: initState,
@@ -79,6 +84,18 @@ export const shopsSlice = createSlice({
         state.shops = action.payload;
       })
       .addCase(addShop.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(filterByDate.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(filterByDate.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.shops = action.payload;
+      })
+      .addCase(filterByDate.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });

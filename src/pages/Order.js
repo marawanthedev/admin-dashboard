@@ -1,6 +1,6 @@
 // redux
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import CustomTable from '../components/CustomTable';
 // components
 import { getOrders } from '../redux/features/order/orderSlice';
@@ -26,6 +26,7 @@ const TABLE_HEAD = tableHeadService.generateTableHead([
 
 export default function Orders() {
   const dispatch = useDispatch();
+  const [page, setPage] = useState(0);
 
   /* eslint-disable */
   useEffect(() => {
@@ -49,13 +50,15 @@ export default function Orders() {
   ];
   return (
     <CustomTable
-      title={'test'}
-      searchAttribute={'status'}
+      title={'Order'}
+      searchAttribute={'shop'}
       head={TABLE_HEAD}
       items={orders}
       sideButtons={sideMenuButtonItems}
       topButtons={topButtons}
       showId
+      page={page}
+      pageCallBack={(value) => setPage(value)}
     />
   );
 }

@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import Form from '../components/form/form';
@@ -54,11 +52,13 @@ export default function ProductForm() {
   const dispatch = useDispatch();
   const { shops } = useSelector((state) => state.shop);
 
+  /* eslint-disable */
   useEffect(() => {
     if (mode === 'add') {
       dispatch(getShops());
     }
   }, []);
+  /* eslint-enable */
 
   const menuItems = [
     {
@@ -91,14 +91,12 @@ export default function ProductForm() {
         },
       ],
       defaultValue: productInfo ? productInfo.category : null,
-      to: '/register-product',
+      to: '/manage-category',
     },
   ];
 
-  const addShopSchema = Yup.object().shape({
+  const addProductSchema = Yup.object().shape({
     select: Yup.string().required(),
-    // shop: Yup.string().required(),
-    // category: Yup.string().required(),
     title: Yup.string().required('title is Required').min(4),
     images: Yup.string().required('images is Required').min(4),
     price: Yup.string().required('price  is Required').min(4),
@@ -108,7 +106,7 @@ export default function ProductForm() {
     availability: Yup.string().required('availability is Required').min(4),
     shippingDetails: Yup.string().required('Shipping Details is Required').min(4),
   });
-  const editShopSchema = Yup.object().shape({
+  const editProductSchema = Yup.object().shape({
     title: Yup.string().required('title is Required').min(4),
     images: Yup.string().required('images is Required').min(4),
     price: Yup.string().required('price  is Required').min(4),
@@ -132,22 +130,24 @@ export default function ProductForm() {
   };
 
   const handleShopSubmission = (formValues) => {
+    console.log(formValues);
     switch (mode) {
       case 'add':
         dispatch(addProduct(formValues));
         break;
       case 'edit':
-        dispatch(editProduct(formValues));
+        dispatch(editProduct({ id: productInfo.id, data: formValues }));
         break;
       default:
     }
   };
 
+  /* eslint-disable */
   const handleBaseRendering = () => {
     if ((mode === 'add' && shops.length !== 0) || mode === 'edit') {
       return (
         <Form
-          schema={mode === 'add' ? addShopSchema : editShopSchema}
+          schema={mode === 'add' ? addProductSchema : editProductSchema}
           textInputs={textInputs}
           formButton={formButton}
           formHeader={formHeader}
@@ -158,5 +158,6 @@ export default function ProductForm() {
       );
     }
   };
+  /* eslint-enable */
   return <>{handleBaseRendering()}</>;
 }

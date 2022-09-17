@@ -26,14 +26,9 @@ const deleteUser = async (userID) => {
   return remainingUsers;
 };
 const editUserRole = async (data) => {
-  const usersCopy = [...users];
-  for (let i = 0; i < usersCopy.length; i += 1) {
-    if (usersCopy[i].id === data.currentItemID) {
-      usersCopy[i].role = data.role;
-      return;
-    }
-  }
-  return usersCopy;
+  console.log('editing user role');
+  console.log(data);
+  return users;
 };
 
 const registerUser = async (userInfo) => {
@@ -44,6 +39,17 @@ const registerUser = async (userInfo) => {
   return oldUsers;
 };
 
+const filterByRole = (role) => {
+  const filteredUsers = users.filter((user) => user.role.toLowerCase() === role.toLowerCase());
+  return filteredUsers;
+};
+
+const filterByDate = async (date) => {
+  console.log(`filtering by date of ${date}`);
+  // todo filter by api call
+  return users;
+};
+
 const userService = {
   // functions
   getUsers,
@@ -51,6 +57,8 @@ const userService = {
   editUserRole,
   addUsersCSV,
   registerUser,
+  filterByDate,
+  filterByRole,
 };
 
 export default userService;

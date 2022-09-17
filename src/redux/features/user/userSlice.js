@@ -31,6 +31,17 @@ export const registerUser = createAsyncThunk('registerUser', async (userInfo) =>
   return registeredUser;
 });
 
+export const filterByRole = createAsyncThunk('filterByRole', async (role) => {
+  const filteredUsers = await userService.filterByRole(role);
+  console.log(filteredUsers);
+  return filteredUsers;
+});
+
+export const filterByDate = createAsyncThunk('filterByDate', async (date) => {
+  const filteredUsers = await userService.filterByDate(date);
+  return filteredUsers;
+});
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState: initState,
@@ -94,6 +105,31 @@ export const usersSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(registerUser.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(filterByRole.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(filterByRole.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.users = action.payload;
+      })
+      .addCase(filterByRole.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(filterByDate.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(filterByDate.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // todo to be updated with api result
+        // state.users = action.payload;
+      })
+      .addCase(filterByDate.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });

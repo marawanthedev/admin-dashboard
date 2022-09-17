@@ -1,17 +1,22 @@
 // redux
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CustomDatePicker from '../components/customDatePicker/customDatePicker';
+import FilterPopUp from '../components/filterPopUp/filterPopUp';
 
 import CustomTable from '../components/CustomTable';
 import tableHeadService from '../utils/tableHead';
 import fileService from '../utils/files';
 // components
-import { getShops, deleteShop } from '../redux/features/shops/shopSlice';
+import { getShops, deleteShop, filterByDate } from '../redux/features/shops/shopSlice';
 // ----------------------------------------------------------------------
 
 export default function Shop() {
   const navigate = useNavigate();
+  const [showFilterPopUp, setShowFilterPopUp] = useState(false);
+  const [dateFilterValue, setDateFilterValue] = useState(new Date());
+  const [page, setPage] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -63,14 +68,33 @@ export default function Shop() {
   }, []);
   /* eslint-enable */
 
+  const handleFilterSubmit = () => {
+    dispatch(filterByDate(dateFilterValue));
+    setPage(0);
+    setShowFilterPopUp(false);
+  };
+
   return (
-    <CustomTable
-      title={'Users'}
-      searchAttribute={'name'}
-      head={TABLE_HEAD}
-      items={shops}
-      sideButtons={sideMenuButtonItems}
-      topButtons={topButtons}
-    />
+    <>
+      {showFilterPopUp ? (
+        <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
+          <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+        </FilterPopUp>
+      ) : null}
+      <div className={`${showFilterPopUp ? 'blur' : null}`}>
+        <CustomTable
+          title={'Shops'}
+          searchAttribute={'name'}
+          searchPlaceHolder={'name'}
+          head={TABLE_HEAD}
+          items={shops}
+          sideButtons={sideMenuButtonItems}
+          topButtons={topButtons}
+          filterButtonCallBack={() => setShowFilterPopUp(true)}
+          page={page}
+          pageCallBack={(value) => setPage(value)}
+        />
+      </div>
+    </>
   );
 }

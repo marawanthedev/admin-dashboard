@@ -11,7 +11,7 @@ import Iconify from '../../../components/Iconify';
 const RootStyle = styled(Toolbar)(({ theme }) => ({
   height: 96,
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
   padding: theme.spacing(0, 1, 0, 3),
 }));
 
@@ -34,7 +34,7 @@ UserListToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterAttribute: PropTypes.string,
   onFilterAttribute: PropTypes.func,
-  onFilterList: PropTypes.func,
+  onFilterClick: PropTypes.func,
   placeHolder: PropTypes.string,
 };
 
@@ -42,10 +42,23 @@ export default function UserListToolbar({
   numSelected,
   filterAttribute,
   onFilterAttribute,
-  onFilterList,
+  onFilterClick,
   placeHolder,
 }) {
-  // const [showFilterPopUp, setShowFilterPopUp] = useState(null);
+  const handleFilterButtonRendering = () => {
+    console.log(onFilterClick);
+    if (onFilterClick) {
+      return (
+        <Tooltip title="Filter list" onClick={onFilterClick} style={{ marginLeft: 'auto' }}>
+          <IconButton>
+            <Iconify icon="ic:round-filter-list" />
+          </IconButton>
+        </Tooltip>
+      );
+    }
+    return null;
+  };
+
   return (
     <RootStyle
       sx={{
@@ -60,16 +73,35 @@ export default function UserListToolbar({
           {numSelected} selected
         </Typography>
       ) : (
-        <SearchStyle
-          value={filterAttribute}
-          onChange={onFilterAttribute}
-          placeholder={placeHolder}
-          startAdornment={
-            <InputAdornment position="start">
-              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-            </InputAdornment>
-          }
-        />
+        <>
+          <SearchStyle
+            value={filterAttribute}
+            onChange={onFilterAttribute}
+            placeholder={placeHolder}
+            startAdornment={
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+              </InputAdornment>
+            }
+            style={{ marginRight: '1rem' }}
+          />
+          {/* search by selection */}
+          {/* <FormControl>
+            <InputLabel id="demo-simple-select-label">Search By</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectValue}
+              label="Age"
+              onChange={handleChange}
+              style={{ width: '10rem' }}
+            >
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl> */}
+        </>
       )}
 
       {numSelected > 0 ? (
@@ -79,23 +111,7 @@ export default function UserListToolbar({
           </IconButton>
         </Tooltip>
       ) : (
-        // <>
-        //   <Grid container item sx={4} justifyContent={'flex-end'}>
-        //     <Grid item marginRight={3}>
-        //       <Typography variant="h4" component="h4">
-        //         Filter By Role
-        //       </Typography>
-        //     </Grid>
-        //     <Grid item>
-        //       <FilterByButtonGroup />
-        //     </Grid>
-        //   </Grid>
-        // </>
-        <Tooltip title="Filter list" onClick={onFilterList}>
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
+        handleFilterButtonRendering()
       )}
     </RootStyle>
   );
