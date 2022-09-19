@@ -4,6 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import recraveLogo from '../assets/recraveLogo.webp';
+import dashboardIcon from '../assets/dashboard.png';
 // ----------------------------------------------------------------------
 
 Logo.propTypes = {
@@ -23,9 +24,14 @@ export default function Logo({ disabledLink = false, sx }) {
   // OR
   // const logo = <Box component="img" src="/static/logo.svg" sx={{ width: 40, height: 40, ...sx }} />
 
+  console.log(process.env.NODE_ENV);
   const logo = (
     <Box sx={{ width: 100, height: 100, ...sx }}>
-      <img src={recraveLogo} alt="logo" style={{ caretColor: 'transparent' }} />
+      <img
+        src={process.env.NODE_ENV === 'development' ? recraveLogo : dashboardIcon}
+        alt="logo"
+        style={{ caretColor: 'transparent' }}
+      />
     </Box>
   );
 
