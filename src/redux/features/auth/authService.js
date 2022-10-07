@@ -27,6 +27,23 @@ const loginUser = async (userCredentials) => {
     throw new Error(error);
   }
 };
+const registerUser = async (userInfo) => {
+  // todo using api calls later
+  const userToPost = {
+    name: `${userInfo?.firstName}${userInfo?.lastName}`,
+    password: userInfo.password,
+    phoneNumber: userInfo.phoneNumber,
+  };
+
+  console.log(userToPost);
+  try {
+    await http.post('/auth/signup', userToPost);
+  } catch (error) {
+    throw new Error(error);
+  }
+  // return users;
+};
+
 const logoutUser = () => {
   const currentUser = null;
   localStorage.removeItem('user');
@@ -37,6 +54,7 @@ const authService = {
   // functions
   loginUser,
   logoutUser,
+  registerUser,
 };
 
 export default authService;

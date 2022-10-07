@@ -1,12 +1,13 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Card, Link, Container, Typography } from '@mui/material';
 
+import { useEffect } from 'react';
 // redux
 
-import { useDispatch } from 'react-redux';
-import { registerUser } from '../redux/features/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../redux/features/auth/authSlice';
 
 // hooks
 import useResponsive from '../hooks/useResponsive';
@@ -64,13 +65,22 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Register() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
-
+  const { isSuccess, isError } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const handleSubmit = (userCredentials) => {
     dispatch(registerUser(userCredentials));
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/login');
+    }
+    if (isError) {
+      // if signup fails
+      alert('error signing up, try again later');
+    }
+  }, [isSuccess, isError]);
   return (
     <Page title="Register">
       <RootStyle>

@@ -17,6 +17,11 @@ export const logoutUser = createAsyncThunk('logoutUser', async (userCredentials)
   return result;
 });
 
+export const registerUser = createAsyncThunk('registerUser', async (userInfo) => {
+  const registeredUser = await authService.registerUser(userInfo);
+  return registeredUser;
+});
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState: initState,
@@ -38,6 +43,17 @@ export const authSlice = createSlice({
         state.userInAuth = action.payload;
       })
       .addCase(loginUser.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(registerUser.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       })

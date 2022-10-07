@@ -15,7 +15,7 @@ export const getUsers = createAsyncThunk('getUsers', async () => {
 });
 
 export const searchAll = createAsyncThunk('searchAll', async (data) => {
-  const result = searchAllUtil()
+  const result = searchAllUtil();
   return result;
 });
 export const deleteUser = createAsyncThunk('deleteUsers', async (data) => {
@@ -29,11 +29,6 @@ export const editUserRole = createAsyncThunk('editUserRole', async (data) => {
 export const addUsersCSV = createAsyncThunk('addUsersCSV', async (data) => {
   const result = await userService.addUsersCSV(data);
   return result;
-});
-
-export const registerUser = createAsyncThunk('registerUser', async (userInfo) => {
-  const registeredUser = await userService.registerUser(userInfo);
-  return registeredUser;
 });
 
 export const filterByRole = createAsyncThunk('filterByRole', async (role) => {
@@ -101,18 +96,7 @@ export const usersSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
       })
-      .addCase(registerUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.users = action.payload;
-      })
-      .addCase(registerUser.rejected, (state) => {
-        state.isLoading = false;
-        state.isError = true;
-      })
+
       .addCase(filterByRole.pending, (state) => {
         state.isLoading = true;
       })

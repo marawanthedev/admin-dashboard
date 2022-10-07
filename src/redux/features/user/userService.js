@@ -1,7 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { getTimelineOppositeContentUtilityClass } from '@mui/lab';
 import { sample } from 'lodash';
-import { http } from '../../../utils/restAPI';
 // import users from '../../../_mock/user';
 
 const users = [...Array(24)].map(() => ({
@@ -32,14 +30,6 @@ const editUserRole = async (data) => {
   return users;
 };
 
-const registerUser = async (userInfo) => {
-  // todo using api calls later
-  const oldUsers = [...users];
-  oldUsers.unshift(userInfo);
-
-  return oldUsers;
-};
-
 const filterByRole = (role) => {
   const filteredUsers = users.filter((user) => user.role.toLowerCase() === role.toLowerCase());
   return filteredUsers;
@@ -57,7 +47,6 @@ const userService = {
   deleteUser,
   editUserRole,
   addUsersCSV,
-  registerUser,
   filterByDate,
   filterByRole,
 };
