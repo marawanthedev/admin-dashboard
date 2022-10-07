@@ -24,6 +24,8 @@ import Iconify from './Iconify';
 import SearchNotFound from './SearchNotFound';
 import { UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 import TableListHead from '../sections/@dashboard/user/TableListHead';
+// todo update to actual image
+import sampleProduct from '../assets/airpdos.jfif';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +41,8 @@ CustomTable.propTypes = {
   filterButtonCallBack: PropTypes.func,
   page: PropTypes.number,
   pageCallBack: PropTypes.func,
+  searchAllSubmitCallback: PropTypes.func,
+  imageThumbnailCallBack: PropTypes.func,
 };
 
 export default function CustomTable({
@@ -53,6 +57,8 @@ export default function CustomTable({
   filterButtonCallBack,
   page,
   pageCallBack,
+  searchAllSubmitCallback,
+  imageThumbnailCallBack,
 }) {
   // const [page, setPage] = useState(0);
 
@@ -63,6 +69,16 @@ export default function CustomTable({
   const [filterAttribute, setFilterAttribute] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleFilterCallBackPassing = () => {
+    if (filterButtonCallBack) {
+      return () => {
+        setFilterAttribute('');
+        filterButtonCallBack();
+      };
+    }
+    return undefined;
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -144,16 +160,35 @@ export default function CustomTable({
 
   const handleTableRendering = (row) =>
     Object.keys(row).map((key, index) => {
-      if (index === 0) {
+      if (!key.includes('image') && !key.includes('photo')) {
         return (
-          <TableCell key={index} align="start">
+          <TableCell key={index} align="center">
             {row[key]}
           </TableCell>
         );
       }
+
+      // image thumbnail
       return (
-        <TableCell key={index} align="center">
-          {row[key]}
+        <TableCell
+          key={index}
+          align="left"
+          onClick={() => {
+            if (imageThumbnailCallBack) imageThumbnailCallBack(row);
+          }}
+        >
+          <div
+            style={{
+              width: '4rem',
+              height: '4rem',
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              cursor: 'pointer',
+              caretColor: 'transparent',
+              backgroundImage: `url(${sampleProduct})`,
+            }}
+          />
         </TableCell>
       );
     });
@@ -168,7 +203,7 @@ export default function CustomTable({
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            {title}
+            {title || 'Null'}
           </Typography>
           <Grid container item xs={8} lg={3.5} justifyContent="flex-end" alignItems={'center'}>
             {handleTopButtonsRendering()}
@@ -177,10 +212,23 @@ export default function CustomTable({
 
         <Card>
           <UserListToolbar
-            onFilterClick={filterButtonCallBack}
+            onFilterClick={handleFilterCallBackPassing()}
             filterAttribute={filterAttribute}
-            onFilterAttribute={handleFilterByAttribute}
+            onFilterAttribute={(e) => {
+              const sampleItem = items[0];
+
+              // eslint-disable-next-line no-prototype-builtins
+              if (sampleItem.hasOwnProperty(searchAttribute)) {
+                handleFilterByAttribute(e);
+              } else {
+                alert('Search Attribute is not valid, please choose attribute that exists in items');
+              }
+            }}
             placeHolder={`Search  ${searchPlaceHolder ? `by ${searchPlaceHolder}` : title}`}
+            searchAllSubmitCallback={() => {
+              setFilterAttribute('');
+              searchAllSubmitCallback();
+            }}
           />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -193,8 +241,6 @@ export default function CustomTable({
                     if (!showId) {
                       delete rowDisplayInfo.id;
                     }
-                    // todo remove after fetch from api
-                    delete rowDisplayInfo.password;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">

@@ -37,7 +37,6 @@ export default function CategoryForm() {
 
   const dispatch = useDispatch();
 
-  console.log(mode);
 
   const menuItems = [];
 
@@ -99,7 +98,6 @@ export default function CategoryForm() {
         />
       );
 
-    console.log(mode === 'add' && menuItems);
     return (
       <Form
         schema={mode === 'add' ? addCategorySchema : editCategorySchema}

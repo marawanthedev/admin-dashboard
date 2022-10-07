@@ -38,31 +38,37 @@ const navConfig = [
     title: 'dashboard',
     path: '/dashboard/app',
     icon: getIcon(DashboardIcon),
+    roles: ['admin'],
   },
   {
     title: 'user',
     path: '/dashboard/user',
     icon: getIcon(UserIcon),
+    roles: ['admin'],
   },
   {
     title: 'shop',
     path: '/dashboard/shop',
     icon: getIcon(StoreIcon),
+    roles: ['admin'],
   },
   {
     title: 'product',
     path: '/dashboard/products',
     icon: getIcon(ProductIcon),
+    roles: ['admin', 'seller'],
   },
   {
     title: 'category',
     path: '/dashboard/category',
     icon: getIcon(CategoryIcon),
+    roles: ['admin', 'seller'],
   },
   {
     title: 'orders',
     path: '/dashboard/orders',
     icon: getIcon(OrderIcon),
+    roles: ['admin', 'seller'],
   },
 
   {
@@ -74,11 +80,6 @@ const navConfig = [
     title: 'register',
     path: '/register',
     icon: getIcon(RegisterIcon),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: getIcon(NotFoundIcon),
   },
 ];
 

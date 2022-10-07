@@ -36,7 +36,6 @@ NavItem.propTypes = {
 
 function NavItem({ item, active }) {
   const theme = useTheme();
-
   const isActiveRoot = active(item.path);
 
   const { title, path, icon, info, children } = item;
@@ -81,7 +80,6 @@ function NavItem({ item, active }) {
             {children.map((item) => {
               const { title, path } = item;
               const isActiveSub = active(path);
-
               return (
                 <ListItemStyle
                   key={title}
@@ -139,6 +137,24 @@ NavSection.propTypes = {
   navConfig: PropTypes.array,
 };
 
+function shouldRender(item) {
+  const userInAuth = JSON.parse(localStorage.getItem('user'));
+
+  if (item && item.roles && item.roles.length > 0) {
+    if (userInAuth) {
+      if (!item.roles.includes(userInAuth.role)) return false;
+      return true;
+    }
+    return false;
+  }
+
+  // disabling login , sign when a user is already logged in
+  if (item.title.toLowerCase().includes('login') && userInAuth) return false;
+  if (item.title.toLowerCase().includes('register') && userInAuth) return false;
+
+  return true;
+}
+
 export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
 
@@ -147,9 +163,12 @@ export default function NavSection({ navConfig, ...other }) {
   return (
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
-        {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
-        ))}
+        {navConfig.map((item) => {
+          if (shouldRender(item)) {
+            return <NavItem key={item.title} item={item} active={match} />;
+          }
+          return null;
+        })}
       </List>
     </Box>
   );

@@ -6,27 +6,18 @@ import CustomTable from '../components/CustomTable';
 import { getOrders } from '../redux/features/order/orderSlice';
 import fileService from '../utils/files';
 import tableHeadService from '../utils/tableHead';
+import Protected from '../utils/protected';
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = tableHeadService.generateTableHead([
-  'id',
-  'status',
-  'user',
-  'shop',
-  'recipientsName',
-  'recipientsAddress',
-  'recipientsType',
-  'quantity',
-  'totalPrice',
-  'paid',
-  'orderNo',
-]);
 
 // ----------------------------------------------------------------------
 
 export default function Orders() {
   const dispatch = useDispatch();
   const [page, setPage] = useState(0);
+  const { orders } = useSelector((state) => state.order);
+
+  const keys = Object.keys(orders[0] || {});
+  const TABLE_HEAD = tableHeadService.generateTableHead(keys.length > 0 ? keys : []);
 
   /* eslint-disable */
   useEffect(() => {
@@ -34,31 +25,27 @@ export default function Orders() {
   }, []);
   /* eslint-enable */
 
-  const { orders } = useSelector((state) => state.order);
-
   const sideMenuButtonItems = [];
 
   const topButtons = [
     {
-      text: 'Import Orders',
-      callback: (e) =>
-        fileService.handleFileUpload(e, (data) => {
-          // todo add to redux state
-          console.log(data);
-        }),
+      text: 'Export Orders',
+      callback: () => fileService.handleFileExport('Orders', orders),
     },
   ];
   return (
-    <CustomTable
-      title={'Order'}
-      searchAttribute={'shop'}
-      head={TABLE_HEAD}
-      items={orders}
-      sideButtons={sideMenuButtonItems}
-      topButtons={topButtons}
-      showId
-      page={page}
-      pageCallBack={(value) => setPage(value)}
-    />
+    <Protected allowedRoles={['admin']}>
+      <CustomTable
+        title={'Order'}
+        searchAttribute={'shop'}
+        head={TABLE_HEAD}
+        items={orders}
+        sideButtons={sideMenuButtonItems}
+        topButtons={topButtons}
+        showId
+        page={page}
+        pageCallBack={(value) => setPage(value)}
+      />
+    </Protected>
   );
 }

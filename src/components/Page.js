@@ -9,7 +9,10 @@ import { Box } from '@mui/material';
 const Page = forwardRef(({ children, title = '', meta, ...other }, ref) => (
   <>
     <Helmet>
-      <title>{`${title}`}</title>
+      {/* eslint-disable */}
+      <title>{`${title !== '' && title !== undefined && title !== null ? title : 'Please Provide A table '}`}</title>
+      {/* eslint-enable */}
+
       {meta}
     </Helmet>
 

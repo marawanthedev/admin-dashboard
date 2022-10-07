@@ -4,6 +4,8 @@ import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@m
 import CustomDatePicker from '../../components/customDatePicker/customDatePicker';
 import CustomTable from '../../components/CustomTable';
 import FilterPopUp from '../../components/filterPopUp/filterPopUp';
+import CloseButton from '../../components/closeButton/closeButton';
+
 import {
   deleteUser,
   getUsers,
@@ -15,6 +17,7 @@ import {
 import fileService from '../../utils/files';
 import tableHeadService from '../../utils/tableHead';
 import './User.scss';
+import Protected from '../../utils/protected';
 
 export default function User() {
   const dispatch = useDispatch();
@@ -25,16 +28,11 @@ export default function User() {
   const [role, setRole] = useState();
   const [currentItem, setCurrentItem] = useState();
   const [page, setPage] = useState(0);
+  const { users, isLoading } = useSelector((state) => state.user);
 
-  const TABLE_HEAD = tableHeadService.generateTableHead([
-    'name',
-    'phoneNumber',
-    'email',
-    'role',
-    'friendsNumber',
-    'giftsSentNumber',
-    'giftsReceivedNumber',
-  ]);
+  // keys for table will only be based on recieved object keys to avoid having column with no value
+  const keys = Object.keys(users[0] || {}).filter((key) => key !== 'id');
+  const TABLE_HEAD = tableHeadService.generateTableHead(keys.length > 0 ? keys : []);
 
   /* eslint-disable */
   useEffect(() => {
@@ -74,7 +72,6 @@ export default function User() {
     }
   };
 
-  const { users, isLoading } = useSelector((state) => state.user);
   const handleSelectChange = (e) => setRoleFilterValue(e.target.value);
 
   const handleTasksInOrder = () => {
@@ -87,6 +84,30 @@ export default function User() {
       }
     }, 200);
   };
+
+  function getRoleSelectMenu() {
+    return (
+      <FormControl>
+        <InputLabel id="demo-simple-select-label" style={{ zIndex: '4' }}>
+          Role
+        </InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={roleFilterValue}
+          label="Age"
+          onChange={handleSelectChange}
+          style={{ width: '10rem' }}
+        >
+          <MenuItem value="customer" style={{ zIndex: '200' }}>
+            Customer
+          </MenuItem>
+          <MenuItem value="admin">Admin</MenuItem>
+          <MenuItem value="seller">Seller</MenuItem>
+        </Select>
+      </FormControl>
+    );
+  }
   const handleFilterSubmit = () => {
     if (dateFilterValue && roleFilterValue) {
       handleTasksInOrder();
@@ -100,75 +121,50 @@ export default function User() {
     setPage(0);
     setShowFilterPopUp(false);
   };
-  return (
-    <div>
-      {showFilterPopUp ? (
-        <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
-          <FormControl>
-            <InputLabel id="demo-simple-select-label" style={{ zIndex: '4' }}>
-              Role
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={roleFilterValue}
-              label="Age"
-              onChange={handleSelectChange}
-              style={{ width: '10rem' }}
-            >
-              <MenuItem value="customer" style={{ zIndex: '200' }}>
-                Customer
-              </MenuItem>
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="seller">Seller</MenuItem>
-            </Select>
-          </FormControl>
-          <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
-        </FilterPopUp>
-      ) : null}
 
-      {showEditPopUp ? (
-        <div className="edit-role-popup">
-          <button className="edit-role-popup__close-btn" type="button" onClick={() => setShowEditPopUp(false)}>
-            X
-          </button>
-          <div className="edit-role-popup__header">Edit Role</div>
-          <TextField
-            fullWidth
-            error={role === '' || role === null}
-            onChange={(e) => setRole(e.target.value)}
-            placeholder="role"
-            size="small"
-            label="role"
-            className="edit-role-popup__input"
-            defaultValue={currentItem.role}
+  return (
+    <Protected allowedRoles={['admin']}>
+      <div>
+      {showFilterPopUp ? (
+          <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
+            {getRoleSelectMenu()}
+            <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+          </FilterPopUp>
+        ) : null}
+
+        {showEditPopUp ? (
+          <div className="edit-role-popup">
+            <CloseButton closeBtnCallback={() => setShowEditPopUp(false)} />
+            <div className="edit-role-popup__header">Edit Role</div>
+            <div className="edit-role-popup__select">{getRoleSelectMenu()}</div>
+            <Button
+              variant="contained"
+              m
+              component="label"
+              to="#"
+              className="edit-role-popup__button"
+              onClick={() => handleEditRoleSubmit()}
+            >
+              Submit
+            </Button>
+          </div>
+        ) : null}
+        <div className={`${showEditPopUp || showFilterPopUp ? 'blur' : null}`}>
+          <CustomTable
+            title={'Users'}
+            searchAttribute={'name'}
+            searchPlaceHolder={'name'}
+            head={TABLE_HEAD}
+            items={users}
+            sideButtons={sideMenuButtonItems}
+            topButtons={topButtons}
+            filterButtonCallBack={() => setShowFilterPopUp(true)}
+            page={page}
+            pageCallBack={(value) => setPage(value)}
+            searchAllSubmitCallback={() => console.log('search in all')}
           />
-          <Button
-            variant="contained"
-            m
-            component="label"
-            to="#"
-            className="edit-role-popup__button"
-            onClick={() => handleEditRoleSubmit()}
-          >
-            Submit
-          </Button>
         </div>
-      ) : null}
-      <div className={`${showEditPopUp || showFilterPopUp ? 'blur' : null}`}>
-        <CustomTable
-          title={'Users'}
-          searchAttribute={'name'}
-          searchPlaceHolder={'name'}
-          head={TABLE_HEAD}
-          items={users}
-          sideButtons={sideMenuButtonItems}
-          topButtons={topButtons}
-          filterButtonCallBack={() => setShowFilterPopUp(true)}
-          page={page}
-          pageCallBack={(value) => setPage(value)}
-        />
       </div>
-    </div>
+    </Protected>
   );
 }

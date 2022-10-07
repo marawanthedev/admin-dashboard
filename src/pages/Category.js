@@ -5,11 +5,16 @@ import CustomTable from '../components/CustomTable';
 import { getCategories, deleteCategory } from '../redux/features/category/categorySlice';
 import fileService from '../utils/files';
 import tableHeadService from '../utils/tableHead';
+import Protected from '../utils/protected';
 
 export default function Category() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const TABLE_HEAD = tableHeadService.generateTableHead(['id', 'name', 'parent', 'tree', 'subCategories']);
+  const { categories } = useSelector((state) => state.category);
+
+  // keys for table will only be based on recieved object keys to avoid having column with no value
+  const keys = Object.keys(categories[0] || {}).filter((key) => key !== 'id');
+  const TABLE_HEAD = tableHeadService.generateTableHead(keys.length > 0 ? keys : []);
   const [page, setPage] = useState(0);
 
   /* eslint-disable */
@@ -37,33 +42,29 @@ export default function Category() {
       text: 'Add Category',
       callback: () => navigate('/manage-category', { state: { mode: 'add' } }),
     },
-    {
-      text: 'Import Categories',
-      callback: (e) =>
-        fileService.handleFileUpload(e, (data) => {
-          console.log(data);
-        }),
-    },
+
     {
       text: 'Export Categories',
       callback: () => fileService.handleFileExport('Users', categories),
     },
   ];
 
-  const { categories } = useSelector((state) => state.category);
+  //  todo convert use type into array
 
   return (
-    <CustomTable
-      title={'Categories'}
-      searchAttribute={'name'}
-      searchPlaceHolder={'name'}
-      head={TABLE_HEAD}
-      items={categories}
-      sideButtons={sideMenuButtonItems}
-      topButtons={topButtons}
-      showId
-      page={page}
-      pageCallBack={(value) => setPage(value)}
-    />
+    <Protected allowedRoles={['admin']}>
+      <CustomTable
+        title={'Categories'}
+        searchAttribute={'name'}
+        searchPlaceHolder={'name'}
+        head={TABLE_HEAD}
+        items={categories}
+        sideButtons={sideMenuButtonItems}
+        topButtons={topButtons}
+        showId
+        page={page}
+        pageCallBack={(value) => setPage(value)}
+      />
+    </Protected>
   );
 }

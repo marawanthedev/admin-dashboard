@@ -10,6 +10,7 @@ import tableHeadService from '../utils/tableHead';
 import fileService from '../utils/files';
 // components
 import { getShops, deleteShop, filterByDate } from '../redux/features/shops/shopSlice';
+import Protected from '../utils/protected';
 // ----------------------------------------------------------------------
 
 export default function Shop() {
@@ -19,16 +20,11 @@ export default function Shop() {
   const [page, setPage] = useState(0);
 
   const dispatch = useDispatch();
+  const { shops } = useSelector((state) => state.shop);
 
-  const TABLE_HEAD = tableHeadService.generateTableHead([
-    'name',
-    'user',
-    'handle',
-    'collection',
-    'description',
-    'tagline',
-    'address',
-  ]);
+  // keys for table will only be based on recieved object keys to avoid having column with no value
+  const keys = Object.keys(shops[0] || {}).filter((key) => key !== 'id');
+  const TABLE_HEAD = tableHeadService.generateTableHead(keys.length > 0 ? keys : []);
 
   const sideMenuButtonItems = [
     {
@@ -47,20 +43,10 @@ export default function Shop() {
       callback: () => navigate('/manage-shop', { state: { mode: 'add' } }),
     },
     {
-      text: 'Import Shop',
-      // todo add to redux state
-      callback: (e) =>
-        fileService.handleFileUpload(e, (data) => {
-          console.log(data);
-        }),
-    },
-    {
       text: 'Export Shop',
       callback: () => fileService.handleFileExport('Shops', shops),
     },
   ];
-
-  const { shops } = useSelector((state) => state.shop);
 
   /* eslint-disable */
   useEffect(() => {
@@ -76,25 +62,28 @@ export default function Shop() {
 
   return (
     <>
-      {showFilterPopUp ? (
-        <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
-          <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
-        </FilterPopUp>
-      ) : null}
-      <div className={`${showFilterPopUp ? 'blur' : null}`}>
-        <CustomTable
-          title={'Shops'}
-          searchAttribute={'name'}
-          searchPlaceHolder={'name'}
-          head={TABLE_HEAD}
-          items={shops}
-          sideButtons={sideMenuButtonItems}
-          topButtons={topButtons}
-          filterButtonCallBack={() => setShowFilterPopUp(true)}
-          page={page}
-          pageCallBack={(value) => setPage(value)}
-        />
-      </div>
+      {/* todo to add user type */}
+      <Protected allowedRoles={['admin']}>
+        {showFilterPopUp ? (
+          <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
+            <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+          </FilterPopUp>
+        ) : null}
+        <div className={`${showFilterPopUp ? 'blur' : null}`}>
+          <CustomTable
+            title={'Shops'}
+            searchAttribute={'name'}
+            searchPlaceHolder={'name'}
+            head={TABLE_HEAD}
+            items={shops}
+            sideButtons={sideMenuButtonItems}
+            topButtons={topButtons}
+            filterButtonCallBack={() => setShowFilterPopUp(true)}
+            page={page}
+            pageCallBack={(value) => setPage(value)}
+          />
+        </div>
+      </Protected>
     </>
   );
 }

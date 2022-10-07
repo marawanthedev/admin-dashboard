@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
-// import { http } from '../../../utils/restAPI';
+// import { http } from '../../../utils//restAPI';
+import { http } from '../../../utils/restAPI';
 // import assert from '../../../utils/assertion';
 import users from '../../../_mock/user';
 
@@ -19,7 +20,37 @@ const shops = [...Array(24)].map(() => ({
 
 // const BASE_URL = '';
 
-const getShops = async () => shops;
+function extractCollectionInfo(collections) {
+  let collectionSummary = '';
+
+  collections.forEach((collection, index) => {
+    collectionSummary += collection.name;
+
+    if (index !== collections.length - 1) {
+      collectionSummary += ',';
+    }
+  });
+
+  return collectionSummary;
+}
+
+const getShops = async () => {
+  const shopsRes = await http.get(`shop/getAll?offset=0&limit=24&getShopDetails`);
+  const shopsData = shopsRes.data.data;
+
+  return shopsData.map((shop) => {
+    const { _id, address, handle, name, collections } = shop;
+    const shopToReturn = {};
+
+    shopToReturn.id = _id;
+    shopToReturn.name = name;
+    shopToReturn.collections = extractCollectionInfo(collections);
+    shopToReturn.handle = handle;
+    shopToReturn.address = Object.values(address).flat();
+
+    return shopToReturn;
+  });
+};
 const addShop = async (newShop) => {
   console.log('adding shop');
   const updatedShops = shops.push(newShop);

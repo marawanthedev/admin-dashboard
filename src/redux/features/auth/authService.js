@@ -1,21 +1,42 @@
 // const BASE_URL = '';
 // import userService from '../user/userService';
+import { http } from '../../../utils/restAPI';
 
-const loginUser = (userCredentials) => {
-  // const users = userService.getUsers();
-  //   const user = getMatchingUser({ email: userCredentials.email, password: userCredentials.password, users });
-
+const loginUser = async (userCredentials) => {
   const user = userCredentials;
 
-  if (user !== null && user !== undefined) {
-    return user;
+  try {
+    const data = {
+      login: 'jinkunyong',
+      password: 'Test123123',
+    };
+    const res = await http.post('auth/login', data);
+
+    const {
+      token,
+      user: { firstName, role, email },
+    } = res.data.data;
+    const userInAuth = { token, firstName, role, email };
+
+    if (user.remember) {
+      localStorage.setItem('user', JSON.stringify({ ...userInAuth }));
+    }
+
+    return userInAuth;
+  } catch (error) {
+    throw new Error(error);
   }
-  return null;
+};
+const logoutUser = () => {
+  const currentUser = null;
+  localStorage.removeItem('user');
+  return currentUser;
 };
 
 const authService = {
   // functions
   loginUser,
+  logoutUser,
 };
 
 export default authService;

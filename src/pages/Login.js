@@ -2,8 +2,10 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Card, Link, Container, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { loginUser } from '../redux/features/auth/authSlice';
+import { useEffect } from 'react';
+import { width } from '@mui/system';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, resetAuth } from '../redux/features/auth/authSlice';
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
@@ -60,14 +62,39 @@ export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
   const navigate = useNavigate();
+  const { isSuccess, isError, userInAuth } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 
-  const handleSubmit = (userCredentials) => {
-    console.log('handling submit');
+  const handleSubmit = async (userCredentials) => {
     dispatch(loginUser(userCredentials));
-    navigate('/dashboard/app');
+    setTimeout(() => {
+      dispatch(resetAuth());
+    }, 200);
   };
+
+  const handleUserNavigation = (userRole) => {
+    // eslint-disable-next-line default-case
+    switch (userRole.toLowerCase()) {
+      case 'admin':
+        navigate('/dashboard/app');
+        break;
+      case 'seller':
+        navigate('/dashboard/app');
+        break;
+      case 'customer':
+        window.location = 'https://web.recrave.co';
+        break;
+      default:
+        navigate('/404');
+    }
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      if (userInAuth) handleUserNavigation(userInAuth.role);
+    }
+    if (isError) throw Error('Invalid Email or password');
+  }, [isSuccess, isError, userInAuth]);
 
   return (
     <Page title="Login">

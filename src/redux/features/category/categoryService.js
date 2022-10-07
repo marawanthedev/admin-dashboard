@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
+import { http } from '../../../utils/restAPI';
 
 const categories = [...Array(24)].map(() => ({
   id: faker.datatype.number(),
@@ -11,7 +12,11 @@ const categories = [...Array(24)].map(() => ({
 
 // const BASE_URL = '';
 
-const getCategories = async () => categories;
+const getCategories = async () => {
+  const res = await http.get(`category/getAll`);
+  const categories = res.data.data;
+  return categories;
+};
 
 const addCategory = async (newCategory) => {
   console.log(`newely added category object is ${newCategory}`);
@@ -27,6 +32,7 @@ const editCategory = async (categoryId, updatedCategoryData) => {
 const deleteCategory = async (categoryId) => {
   console.log('deleting category');
   console.log(categoryId);
+
   return categories;
 };
 

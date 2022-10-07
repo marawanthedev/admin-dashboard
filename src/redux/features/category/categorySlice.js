@@ -12,6 +12,7 @@ export const getCategories = createAsyncThunk('getCategories', async () => {
   const result = await categoryService.getCategories();
   return result;
 });
+
 export const addCategory = createAsyncThunk('addCategory', async (newCategory) => {
   const result = await categoryService.addCategory(newCategory);
   return result;
@@ -38,7 +39,6 @@ export const categorySlice = createSlice({
       .addCase(getCategories.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        console.log(action.payload);
         state.categories = action.payload;
       })
       .addCase(getCategories.rejected, (state) => {

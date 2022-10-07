@@ -16,10 +16,6 @@ const textInputs = [
     label: 'Name',
   },
   {
-    name: 'collections',
-    label: 'Collections',
-  },
-  {
     name: 'description',
     label: 'Description',
   },
@@ -49,7 +45,6 @@ export default function ShopForm() {
 
   /* eslint-disable */
   useEffect(() => {
-    console.log(mode);
     if (mode === 'add') {
       dispatch(getUsers());
     }
@@ -91,7 +86,6 @@ export default function ShopForm() {
     tagline: mode === 'edit' && shopInfo ? shopInfo.tagline : '',
     description: mode === 'edit' && shopInfo ? shopInfo.description : '',
     address: mode === 'edit' && shopInfo ? shopInfo.address : '',
-    collections: mode === 'edit' && shopInfo ? shopInfo.collections : '',
   };
 
   const handleShopSubmission = (formValues) => {

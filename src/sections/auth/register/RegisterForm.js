@@ -14,20 +14,21 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 export default function RegisterForm({ onFormSubmission }) {
   const navigate = useNavigate();
+  const malaysianNumberRegex = /^(01)[0-46-9]*[0-9]{7,8}$/;
 
   const [showPassword, setShowPassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+    phoneNumber: Yup.string().matches(malaysianNumberRegex, 'Malaysian Phone Number is Required'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
     firstName: '',
     lastName: '',
-    email: '',
+    phoneNumber: '',
     password: '',
   };
 
@@ -56,7 +57,7 @@ export default function RegisterForm({ onFormSubmission }) {
             <RHFTextField name="lastName" label="Last name" />
           </Stack>
 
-          <RHFTextField name="email" label="Email address" />
+          <RHFTextField name="phoneNumber" label="Phone Number" />
 
           <RHFTextField
             name="password"

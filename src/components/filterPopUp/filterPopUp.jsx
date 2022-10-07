@@ -1,6 +1,7 @@
 import './filterPopUp.scss';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
+import CloseButton from '../closeButton/closeButton';
 
 FilterPopUp.propTypes = {
   children: PropTypes.node,
@@ -13,9 +14,7 @@ export default function FilterPopUp({ children, filterSubmitCallBack, closeBtnCa
     <div className="filter-popup">
       <div className="filter-popup__header">
         <div className="filter-popup__header__text">Filter</div>
-        <button className="filter-popup__header__close-btn" type="button" onClick={closeBtnCallback}>
-          X
-        </button>
+        <CloseButton closeBtnCallback={closeBtnCallback} />
       </div>
       <div className="filter-popup__children-container">{children}</div>
 
@@ -23,7 +22,7 @@ export default function FilterPopUp({ children, filterSubmitCallBack, closeBtnCa
         variant="contained"
         component="label"
         to="#"
-        className="edit-role-popup__button"
+        className="filter-popup__button"
         style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '1.5rem' }}
         onClick={() => filterSubmitCallBack()}
       >

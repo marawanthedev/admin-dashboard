@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { searchAllUtil } from '../../../utils/searchAll';
 import userService from './userService';
 
 const initState = {
@@ -13,6 +14,10 @@ export const getUsers = createAsyncThunk('getUsers', async () => {
   return result;
 });
 
+export const searchAll = createAsyncThunk('searchAll', async (data) => {
+  const result = searchAllUtil()
+  return result;
+});
 export const deleteUser = createAsyncThunk('deleteUsers', async (data) => {
   const result = userService.deleteUser(data);
   return result;

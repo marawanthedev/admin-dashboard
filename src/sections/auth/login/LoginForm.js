@@ -1,8 +1,6 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -15,8 +13,6 @@ import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hoo
 // ----------------------------------------------------------------------
 
 export default function LoginForm({ onFormSubmission }) {
-  const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
@@ -43,8 +39,8 @@ export default function LoginForm({ onFormSubmission }) {
 
   const onSubmit = async (formValues) => {
     reset();
-    onFormSubmission({ ...formValues, name: 'Marwan' });
-    navigate('/dashboard/app');
+    // todo remove set items
+    onFormSubmission({ ...formValues });
   };
 
   return (

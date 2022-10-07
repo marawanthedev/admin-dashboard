@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
+import { getTimelineOppositeContentUtilityClass } from '@mui/lab';
 import { sample } from 'lodash';
-// import { http } from '../../../utils/restAPI';
+import { http } from '../../../utils/restAPI';
 // import users from '../../../_mock/user';
 
 const users = [...Array(24)].map(() => ({
@@ -19,7 +20,7 @@ const users = [...Array(24)].map(() => ({
 // const BASE_URL = '';
 
 const getUsers = async () => users;
-const addUsersCSV = async (_users) => _users;
+const addUsersCSV = async (_users) => users;
 
 const deleteUser = async (userID) => {
   const remainingUsers = users.filter((user) => user.id !== userID);

@@ -10,34 +10,42 @@ const textInputs = [
   {
     name: 'title',
     label: 'Title',
+    modes: ['edit', 'add'],
   },
   {
     name: 'description',
     label: 'Description',
+    modes: ['edit', 'add'],
   },
   {
     name: 'images',
     label: 'Images',
+    modes: ['edit'],
   },
   {
     name: 'price',
     label: 'Price',
+    modes: ['edit', 'add'],
   },
   {
     name: 'quantity',
     label: 'Quantity',
+    modes: ['edit'],
   },
   {
     name: 'shopHandle',
     label: 'Shop Handle',
+    modes: ['edit', 'add'],
   },
   {
     name: 'availability',
     label: 'Availability',
+    modes: ['edit'],
   },
   {
     name: 'shippingDetails',
     label: 'Shipping Details',
+    modes: ['edit'],
   },
 ];
 
@@ -67,10 +75,12 @@ export default function ProductForm() {
       name: 'shop',
       defaultValue: productInfo ? productInfo.shop : null,
       to: '/manage-shop',
+      modes: ['add'],
     },
     {
       label: 'Category',
       name: 'category',
+      modes: ['edit'],
 
       //   todo gotta use actual categories
       items: [
@@ -96,19 +106,16 @@ export default function ProductForm() {
   ];
 
   const addProductSchema = Yup.object().shape({
-    select: Yup.string().required(),
+    select: Yup.string().required('Select value is required!'),
+
     title: Yup.string().required('title is Required').min(4),
-    images: Yup.string().required('images is Required').min(4),
     price: Yup.string().required('price  is Required').min(4),
     description: Yup.string().required('description is Required').min(4),
-    quantity: Yup.string().required('quantity is Required').min(4),
     shopHandle: Yup.string().required('Shop Handle is Required').min(4),
-    availability: Yup.string().required('availability is Required').min(4),
-    shippingDetails: Yup.string().required('Shipping Details is Required').min(4),
   });
   const editProductSchema = Yup.object().shape({
+    select: Yup.string().required('Select value is required!'),
     title: Yup.string().required('title is Required').min(4),
-    images: Yup.string().required('images is Required').min(4),
     price: Yup.string().required('price  is Required').min(4),
     description: Yup.string().required('description is Required').min(4),
     quantity: Yup.string().required('quantity is Required').min(4),
@@ -118,7 +125,6 @@ export default function ProductForm() {
   });
 
   const defaultValues = {
-    select: mode === 'edit' && productInfo ? productInfo.shop : '',
     title: mode === 'edit' && productInfo ? productInfo.title : '',
     description: mode === 'edit' && productInfo ? productInfo.description : '',
     images: mode === 'edit' && productInfo ? productInfo.images : '',
@@ -130,7 +136,6 @@ export default function ProductForm() {
   };
 
   const handleShopSubmission = (formValues) => {
-    console.log(formValues);
     switch (mode) {
       case 'add':
         dispatch(addProduct(formValues));
@@ -141,6 +146,16 @@ export default function ProductForm() {
       default:
     }
   };
+  function filterByMode(arr) {
+    return arr.filter((item) => {
+      let doesBelong = true;
+      if (item.modes) {
+        if (!item.modes.includes(mode)) doesBelong = false;
+      }
+      if (doesBelong) return item;
+      return null;
+    });
+  }
 
   /* eslint-disable */
   const handleBaseRendering = () => {
@@ -148,10 +163,10 @@ export default function ProductForm() {
       return (
         <Form
           schema={mode === 'add' ? addProductSchema : editProductSchema}
-          textInputs={textInputs}
+          textInputs={filterByMode(textInputs)}
           formButton={formButton}
           formHeader={formHeader}
-          menuItems={mode === 'add' ? menuItems : null}
+          menuItems={filterByMode(menuItems)}
           defaultValues={defaultValues}
           onFormSubmission={handleShopSubmission}
         />

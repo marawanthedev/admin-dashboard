@@ -3,7 +3,7 @@
 import PropTypes from 'prop-types';
 // material
 import { styled } from '@mui/material/styles';
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from '@mui/material';
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Button } from '@mui/material';
 // component
 import Iconify from '../../../components/Iconify';
 // ----------------------------------------------------------------------
@@ -17,15 +17,6 @@ const RootStyle = styled(Toolbar)(({ theme }) => ({
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
   width: 240,
-  transition: theme.transitions.create(['box-shadow', 'width'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.shorter,
-  }),
-  '&.Mui-focused': { width: 320, boxShadow: theme.customShadows.z8 },
-  '& fieldset': {
-    borderWidth: `1px !important`,
-    borderColor: `${theme.palette.grey[500_32]} !important`,
-  },
 }));
 
 // ----------------------------------------------------------------------
@@ -36,6 +27,7 @@ UserListToolbar.propTypes = {
   onFilterAttribute: PropTypes.func,
   onFilterClick: PropTypes.func,
   placeHolder: PropTypes.string,
+  searchAllSubmitCallback: PropTypes.func,
 };
 
 export default function UserListToolbar({
@@ -44,13 +36,13 @@ export default function UserListToolbar({
   onFilterAttribute,
   onFilterClick,
   placeHolder,
+  searchAllSubmitCallback,
 }) {
   const handleFilterButtonRendering = () => {
-    console.log(onFilterClick);
     if (onFilterClick) {
       return (
-        <Tooltip title="Filter list" onClick={onFilterClick} style={{ marginLeft: 'auto' }}>
-          <IconButton>
+        <Tooltip title="Filter list" style={{ marginLeft: 'auto' }}>
+          <IconButton onClick={onFilterClick}>
             <Iconify icon="ic:round-filter-list" />
           </IconButton>
         </Tooltip>
@@ -68,51 +60,32 @@ export default function UserListToolbar({
         }),
       }}
     >
-      {numSelected > 0 ? (
-        <Typography component="div" variant="subtitle1">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <>
-          <SearchStyle
-            value={filterAttribute}
-            onChange={onFilterAttribute}
-            placeholder={placeHolder}
-            startAdornment={
-              <InputAdornment position="start">
-                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-              </InputAdornment>
-            }
-            style={{ marginRight: '1rem' }}
-          />
-          {/* search by selection */}
-          {/* <FormControl>
-            <InputLabel id="demo-simple-select-label">Search By</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={selectValue}
-              label="Age"
-              onChange={handleChange}
-              style={{ width: '10rem' }}
-            >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl> */}
-        </>
-      )}
+      <SearchStyle
+        value={filterAttribute}
+        onChange={onFilterAttribute}
+        placeholder={placeHolder}
+        sx={{ width: 200, fontSize: '15px' }}
+        startAdornment={
+          <InputAdornment position="start" style={{ caretColor: 'transparent' }}>
+            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+          </InputAdornment>
+        }
+        style={{ marginRight: '1rem' }}
+      />
+      <Button
+        variant="contained"
+        component="label"
+        to="#"
+        disabled={!filterAttribute ?? true}
+        className="edit-role-popup__button"
+        style={{ width: 100, height: 40 }}
+        sx={{ width: 40, height: 20, fontSize: '11px' }}
+        onClick={() => searchAllSubmitCallback()}
+      >
+        Search All
+      </Button>
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        handleFilterButtonRendering()
-      )}
+      {handleFilterButtonRendering()}
     </RootStyle>
   );
 }

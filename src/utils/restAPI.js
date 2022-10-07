@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 // East HTTP library
 
 // library for making http requests
@@ -8,20 +9,22 @@
 import axios from 'axios';
 
 class EasyAxios {
-  static getUserInAuth = () =>
-    localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null;
+  baseUrl = process.env.REACT_APP_BASE_URL;
 
   getHeader = () => {
-    const userInAuth = this.getUserInAuth();
-    return {
-      'Content-type': 'application/json',
-      authorization: userInAuth ? `Bearer ${userInAuth.token}` : null,
-    };
+    const userInAuth = localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null;
+    if (userInAuth) {
+      return {
+        'Content-type': 'application/json',
+        token: userInAuth?.token,
+      };
+    }
+    return null;
   };
 
   // make a http get request
   async get(url) {
-    const res = await axios.get(url, {
+    const res = await axios.get(`${this.baseUrl}${url}`, {
       headers: this.getHeader(),
     });
     return res;
@@ -29,7 +32,7 @@ class EasyAxios {
 
   // make a http post request
   async post(url, data) {
-    const res = await axios.post(url, data, { headers: this.getHeader() });
+    const res = await axios.post(`${this.baseUrl}${url}`, data, { headers: this.getHeader() });
     return res;
   }
 

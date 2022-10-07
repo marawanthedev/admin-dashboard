@@ -34,7 +34,7 @@ export default function TableListHead({ order, orderBy, headLabel, onRequestSort
         {headLabel.map((headCell, index) => (
           <TableCell
             key={headCell.id}
-            align={index === 0 ? 'left' : 'center'}
+            align={index === 0 ? 'center' : 'center'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
