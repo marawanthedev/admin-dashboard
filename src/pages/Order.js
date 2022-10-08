@@ -7,6 +7,8 @@ import { getOrders } from '../redux/features/order/orderSlice';
 import fileService from '../utils/files';
 import tableHeadService from '../utils/tableHead';
 import Protected from '../utils/protected';
+import { CustomLoader } from '../components/common/customLoader/customLoader';
+
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
@@ -34,18 +36,23 @@ export default function Orders() {
     },
   ];
   return (
-    <Protected allowedRoles={['admin']}>
-      <CustomTable
-        title={'Order'}
-        searchAttribute={'shop'}
-        head={TABLE_HEAD}
-        items={orders}
-        sideButtons={sideMenuButtonItems}
-        topButtons={topButtons}
-        showId
-        page={page}
-        pageCallBack={(value) => setPage(value)}
-      />
-    </Protected>
+    <>
+      {/* loader with its own internal handling */}
+      <CustomLoader targetReduxFeature="product" />
+
+      <Protected allowedRoles={['admin']}>
+        <CustomTable
+          title={'Order'}
+          searchAttribute={'shop'}
+          head={TABLE_HEAD}
+          items={orders}
+          sideButtons={sideMenuButtonItems}
+          topButtons={topButtons}
+          showId
+          page={page}
+          pageCallBack={(value) => setPage(value)}
+        />
+      </Protected>
+    </>
   );
 }

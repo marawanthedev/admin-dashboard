@@ -1,7 +1,7 @@
 import './imageSliderPopup.scss';
 import PropTypes from 'prop-types';
 import Slider from 'react-slick';
-import CloseButton from '../closeButton/closeButton';
+import CloseButton from '../../common/closeButton/closeButton';
 
 ImageSliderPopUp.propTypes = {
   images: PropTypes.node,
@@ -56,8 +56,12 @@ export default function ImageSliderPopUp({ images, closeBtnCallback, header }) {
       <div className="image-slider-popup__image-container">
         <Slider {...sliderSettings}>
           {images.map((image, index) => {
-            // console.log(url(${image}))
-            return <img key={index} className="image-slider-popup__image-container__item" src={image} alt="product" />;
+            if (image && image !== null) {
+              return (
+                <img key={index} className="image-slider-popup__image-container__item" src={image} alt="product" />
+              );
+            }
+            return <div key={index}> No images for that that product</div>;
           })}
         </Slider>
       </div>

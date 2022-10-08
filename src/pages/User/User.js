@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import CustomDatePicker from '../../components/customDatePicker/customDatePicker';
+import CustomDatePicker from '../../components/common/customDatePicker/customDatePicker';
 import CustomTable from '../../components/CustomTable';
 import FilterPopUp from '../../components/filterPopUp/filterPopUp';
-import CloseButton from '../../components/closeButton/closeButton';
+import CloseButton from '../../components/common/closeButton/closeButton';
+import { CustomLoader } from '../../components/common/customLoader/customLoader';
 
 import {
   deleteUser,
@@ -57,7 +58,7 @@ export default function User() {
   const topButtons = [
     {
       text: 'Import Users',
-      callback: (e) => fileService.handleFileUpload(e, (data) => dispatch(addUsersCSV(data))),
+      callback: (e) => fileService.handleCsvFileUpload(e, (data) => dispatch(addUsersCSV(data))),
     },
     {
       text: 'Export Users',
@@ -123,48 +124,53 @@ export default function User() {
   };
 
   return (
-    <Protected allowedRoles={['admin']}>
-      <div>
-      {showFilterPopUp ? (
-          <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
-            {getRoleSelectMenu()}
-            <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
-          </FilterPopUp>
-        ) : null}
+    <>
+      {/* loader with its own internal handling */}
+      <CustomLoader targetReduxFeature="product" />
 
-        {showEditPopUp ? (
-          <div className="edit-role-popup">
-            <CloseButton closeBtnCallback={() => setShowEditPopUp(false)} />
-            <div className="edit-role-popup__header">Edit Role</div>
-            <div className="edit-role-popup__select">{getRoleSelectMenu()}</div>
-            <Button
-              variant="contained"
-              m
-              component="label"
-              to="#"
-              className="edit-role-popup__button"
-              onClick={() => handleEditRoleSubmit()}
-            >
-              Submit
-            </Button>
+      <Protected allowedRoles={['admin']}>
+        <div>
+          {showFilterPopUp ? (
+            <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
+              {getRoleSelectMenu()}
+              <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+            </FilterPopUp>
+          ) : null}
+
+          {showEditPopUp ? (
+            <div className="edit-role-popup">
+              <CloseButton closeBtnCallback={() => setShowEditPopUp(false)} />
+              <div className="edit-role-popup__header">Edit Role</div>
+              <div className="edit-role-popup__select">{getRoleSelectMenu()}</div>
+              <Button
+                variant="contained"
+                m
+                component="label"
+                to="#"
+                className="edit-role-popup__button"
+                onClick={() => handleEditRoleSubmit()}
+              >
+                Submit
+              </Button>
+            </div>
+          ) : null}
+          <div className={`${showEditPopUp || showFilterPopUp ? 'blur' : null}`}>
+            <CustomTable
+              title={'Users'}
+              searchAttribute={'name'}
+              searchPlaceHolder={'name'}
+              head={TABLE_HEAD}
+              items={users}
+              sideButtons={sideMenuButtonItems}
+              topButtons={topButtons}
+              filterButtonCallBack={() => setShowFilterPopUp(true)}
+              page={page}
+              pageCallBack={(value) => setPage(value)}
+              searchAllSubmitCallback={() => console.log('search in all')}
+            />
           </div>
-        ) : null}
-        <div className={`${showEditPopUp || showFilterPopUp ? 'blur' : null}`}>
-          <CustomTable
-            title={'Users'}
-            searchAttribute={'name'}
-            searchPlaceHolder={'name'}
-            head={TABLE_HEAD}
-            items={users}
-            sideButtons={sideMenuButtonItems}
-            topButtons={topButtons}
-            filterButtonCallBack={() => setShowFilterPopUp(true)}
-            page={page}
-            pageCallBack={(value) => setPage(value)}
-            searchAllSubmitCallback={() => console.log('search in all')}
-          />
         </div>
-      </div>
-    </Protected>
+      </Protected>
+    </>
   );
 }

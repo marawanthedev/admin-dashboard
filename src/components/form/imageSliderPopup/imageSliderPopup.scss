@@ -1,6 +1,6 @@
 .image-slider-popup {
   width: 30rem;
-  height: 25rem;
+  height: 30rem;
   padding: 1rem 2rem;
   background-color: white;
   position: absolute;
@@ -16,6 +16,10 @@
 
   &__header {
     &__text {
+      width: 20rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       position: relative;
       &::first-letter {
         text-transform: uppercase;
@@ -59,12 +63,12 @@
     font-size: 1rem;
     color: rgb(216, 210, 210) !important;
     opacity: 1 !important;
-    border-radius: 50%;
   }
   .slick-dots li.slick-active button:before,
   .slick-dots li button:before {
     margin-top: 1rem;
   }
+
   @media (max-width: 600px) {
     width: 25rem;
   }

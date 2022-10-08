@@ -2,15 +2,16 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomDatePicker from '../components/customDatePicker/customDatePicker';
+import CustomDatePicker from '../components/common/customDatePicker/customDatePicker';
 import FilterPopUp from '../components/filterPopUp/filterPopUp';
 
 import CustomTable from '../components/CustomTable';
 import tableHeadService from '../utils/tableHead';
 import fileService from '../utils/files';
 // components
-import { getShops, deleteShop, filterByDate } from '../redux/features/shops/shopSlice';
+import { getShops, deleteShop, filterByDate, addShop } from '../redux/features/shops/shopSlice';
 import Protected from '../utils/protected';
+import { CustomLoader } from '../components/common/customLoader/customLoader';
 // ----------------------------------------------------------------------
 
 export default function Shop() {
@@ -31,6 +32,10 @@ export default function Shop() {
       text: 'Delete',
       callback: (currentItem) => dispatch(deleteShop(currentItem.id)),
     },
+    // {
+    //   text: 'Import Shops',
+    //   callback: (e) => fileService.handleCsvFileUpload(e, (data) => dispatch(addShop(data))),
+    // },
     {
       text: 'Edit Shop',
       callback: (currentItem) => navigate('/manage-shop', { state: { mode: 'edit', shop: currentItem } }),
@@ -63,6 +68,8 @@ export default function Shop() {
   return (
     <>
       {/* todo to add user type */}
+      {/* loader with its own internal handling */}
+      <CustomLoader targetReduxFeature="shop" />
       <Protected allowedRoles={['admin']}>
         {showFilterPopUp ? (
           <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>

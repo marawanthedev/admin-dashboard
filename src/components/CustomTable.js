@@ -168,12 +168,15 @@ export default function CustomTable({
         );
       }
 
+      const imagesThumbnail = row[key][0].thumbnail ? row[key][0].thumbnail : row[key][0].full;
+
       // image thumbnail
       return (
         <TableCell
           key={index}
           align="left"
           onClick={() => {
+            window.scrollTo(0, 0);
             if (imageThumbnailCallBack) imageThumbnailCallBack(row);
           }}
         >
@@ -186,7 +189,7 @@ export default function CustomTable({
               backgroundRepeat: 'no-repeat',
               cursor: 'pointer',
               caretColor: 'transparent',
-              backgroundImage: `url(${sampleProduct})`,
+              backgroundImage: `url(${imagesThumbnail})`,
             }}
           />
         </TableCell>

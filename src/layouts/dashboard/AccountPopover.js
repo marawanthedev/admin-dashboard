@@ -25,13 +25,19 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const anchorRef = useRef(null);
+  // const inputFileRef = useRef(null);
   const { userInAuth } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(null);
+  // const [userAvatarSource, setUserAvatarSource] = useState(null);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
+
+    // to activate avatar selecting
+    // inputFileRef.current.click();
   };
 
   const handleClose = () => {
@@ -67,6 +73,17 @@ export default function AccountPopover() {
         }}
       >
         <Avatar src={account.photoURL} alt="photoURL" />
+        {/* <input
+          width="100%"
+          height="100%"
+          name="avatar-image"
+          type="file"
+          hidden
+          ref={inputFileRef}
+          onChange={(e) => {
+            console.log(e.target.value);
+          }}
+        /> */}
       </IconButton>
       <MenuPopover
         open={Boolean(open)}

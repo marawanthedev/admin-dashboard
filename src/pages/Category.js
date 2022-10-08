@@ -2,10 +2,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomTable from '../components/CustomTable';
-import { getCategories, deleteCategory } from '../redux/features/category/categorySlice';
+import { getCategories, deleteCategory, addCategory } from '../redux/features/category/categorySlice';
 import fileService from '../utils/files';
 import tableHeadService from '../utils/tableHead';
 import Protected from '../utils/protected';
+import { CustomLoader } from '../components/common/customLoader/customLoader';
 
 export default function Category() {
   const navigate = useNavigate();
@@ -42,7 +43,10 @@ export default function Category() {
       text: 'Add Category',
       callback: () => navigate('/manage-category', { state: { mode: 'add' } }),
     },
-
+    // {
+    //   text: 'Import Categories',
+    //   callback: (e) => fileService.handleCsvFileUpload(e, (data) => dispatch(addCategory(data))),
+    // },
     {
       text: 'Export Categories',
       callback: () => fileService.handleFileExport('Users', categories),
@@ -52,19 +56,23 @@ export default function Category() {
   //  todo convert use type into array
 
   return (
-    <Protected allowedRoles={['admin']}>
-      <CustomTable
-        title={'Categories'}
-        searchAttribute={'name'}
-        searchPlaceHolder={'name'}
-        head={TABLE_HEAD}
-        items={categories}
-        sideButtons={sideMenuButtonItems}
-        topButtons={topButtons}
-        showId
-        page={page}
-        pageCallBack={(value) => setPage(value)}
-      />
-    </Protected>
+    <>
+      {/* loader with its own internal handling */}
+      <CustomLoader targetReduxFeature="product" />
+      <Protected allowedRoles={['admin']}>
+        <CustomTable
+          title={'Categories'}
+          searchAttribute={'name'}
+          searchPlaceHolder={'name'}
+          head={TABLE_HEAD}
+          items={categories}
+          sideButtons={sideMenuButtonItems}
+          topButtons={topButtons}
+          showId
+          page={page}
+          pageCallBack={(value) => setPage(value)}
+        />
+      </Protected>
+    </>
   );
 }

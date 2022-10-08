@@ -18,7 +18,10 @@ const users = [...Array(24)].map(() => ({
 // const BASE_URL = '';
 
 const getUsers = async () => users;
-const addUsersCSV = async (_users) => users;
+const addUsersCSV = async (_users) => {
+  console.log(_users);
+  return users;
+};
 
 const deleteUser = async (userID) => {
   const remainingUsers = users.filter((user) => user.id !== userID);

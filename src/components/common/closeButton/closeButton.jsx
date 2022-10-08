@@ -1,6 +1,6 @@
 import './closeButton.scss';
 import PropTypes from 'prop-types';
-import closeButton from '../../assets/close.png';
+import closeButton from '../../../assets/close.png';
 
 CloseButton.propTypes = {
   closeBtnCallback: PropTypes.func,

@@ -1,9 +1,15 @@
 import csvService from './csv';
 
-const handleFileUpload = async (e, callback) => {
-  const filePath = e.target.value;
-  const data = await csvService.importCSV(filePath);
-  if (callback) callback(data);
+const handleCsvFileUpload = async (e, callback) => {
+  const filePath = e.target.files[0];
+  const fileReader = new FileReader();
+
+  fileReader.readAsText(filePath);
+  fileReader.onload = (event) => {
+    const csvText = event.target.result;
+    const csvData = csvService.csvFileToArray(csvText);
+    if (callback) callback(csvData);
+  };
 };
 
 const handleFileExport = (csvExportName, items) => {
@@ -12,7 +18,7 @@ const handleFileExport = (csvExportName, items) => {
 
 const fileService = {
   handleFileExport,
-  handleFileUpload,
+  handleCsvFileUpload,
 };
 
 export default fileService;

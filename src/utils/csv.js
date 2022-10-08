@@ -1,5 +1,3 @@
-import { csv } from 'd3';
-
 function exportToCsv({ fileName, data }) {
   if (data !== undefined && data !== null && data.length !== 0) {
     let csvContent = 'data:text/csv;charset=utf-8,';
@@ -23,11 +21,25 @@ function exportToCsv({ fileName, data }) {
   return null;
 }
 
-const importCSV = (filePath) => csv(filePath).then((data) => data);
+const csvFileToArray = (string) => {
+  const csvHeader = string.slice(0, string.indexOf('\n')).split(',');
+  const csvRows = string.slice(string.indexOf('\n') + 1).split('\n');
+
+  const array = csvRows.map((i) => {
+    const values = i.split(',');
+    const obj = csvHeader.reduce((object, header, index) => {
+      object[header] = values[index];
+      return object;
+    }, {});
+    return obj;
+  });
+
+  return array;
+};
 
 const csvService = {
   exportToCsv,
-  importCSV,
+  csvFileToArray,
 };
 
 export default csvService;

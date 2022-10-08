@@ -1,7 +1,7 @@
 import './filterPopUp.scss';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import CloseButton from '../closeButton/closeButton';
+import CloseButton from '../common/closeButton/closeButton';
 
 FilterPopUp.propTypes = {
   children: PropTypes.node,
