@@ -16,16 +16,20 @@ const textInputs = [
     label: 'Name',
   },
   {
-    name: 'description',
-    label: 'Description',
+    name: 'country',
+    label: 'Country',
   },
   {
-    name: 'tagline',
-    label: 'Tagline',
+    name: 'state',
+    label: 'State',
   },
   {
-    name: 'address',
-    label: 'Address',
+    name: 'city',
+    label: 'City',
+  },
+  {
+    name: 'postalCode',
+    label: 'Postal Code',
   },
 ];
 
@@ -39,6 +43,7 @@ export default function ShopForm() {
     text: mode && mode === 'edit' ? 'Update Shop' : 'Register Shop',
     onClick: () => console.log('clicked'),
   };
+
 
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.user);
@@ -54,22 +59,24 @@ export default function ShopForm() {
   const menuItems =
     mode === undefined || mode !== 'edit'
       ? [
-          {
-            label: 'User',
-            items: users,
-            defaultValue: shopInfo ? shopInfo.user : null,
-            to: '/register',
-          },
-        ]
+        {
+          label: 'User',
+          items: users,
+          defaultValue: shopInfo ? shopInfo.user : null,
+          to: '/register',
+        },
+      ]
       : null;
+
 
   const addShopSchema = Yup.object().shape({
     select: Yup.string().required(),
     handle: Yup.string().required('Handle is Required').min(4),
     name: Yup.string().required('Name is Required').min(4),
-    tagline: Yup.string().required('Tagline  is Required').min(4),
-    description: Yup.string().required('description is Required').min(4),
-    address: Yup.string().required('Address is Required').min(4),
+    country: Yup.string().required('Country is Required').min(4),
+    state: Yup.string().required('State is Required').min(4),
+    city: Yup.string().required('City is Required').min(4),
+    postalCode: Yup.string().required('Postal Code is Required').min(4),
   });
   const editShopSchema = Yup.object().shape({
     handle: Yup.string().required('Handle is Required').min(4),
@@ -83,9 +90,10 @@ export default function ShopForm() {
     select: mode === 'edit' && shopInfo ? shopInfo.name : '',
     handle: mode === 'edit' && shopInfo ? shopInfo.handle : '',
     name: mode === 'edit' && shopInfo ? shopInfo.name : '',
-    tagline: mode === 'edit' && shopInfo ? shopInfo.tagline : '',
-    description: mode === 'edit' && shopInfo ? shopInfo.description : '',
-    address: mode === 'edit' && shopInfo ? shopInfo.address : '',
+    country: '',
+    state: '',
+    city: '',
+    postalCode: '',
   };
 
   const handleShopSubmission = (formValues) => {
@@ -94,7 +102,7 @@ export default function ShopForm() {
         dispatch(addShop(formValues));
         break;
       case 'edit':
-        dispatch(editShopInfo(formValues));
+        dispatch(editShopInfo({ ...formValues, id: shopInfo.id }));
         break;
       default:
     }

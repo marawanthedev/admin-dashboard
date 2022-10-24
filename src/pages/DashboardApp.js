@@ -28,8 +28,7 @@ export default function DashboardApp() {
 
   return (
     <>
-      {/* loader with its own internal handling */}
-      {/* todo add target feature redux name later */}
+
       <CustomLoader />
       <Protected allowedRoles={'admin'} unAuthorizedComponent={unAuthorizedComponent()}>
         <Page title="Dashboard">

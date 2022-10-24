@@ -8,7 +8,7 @@ CustomDatePicker.propTypes = {
   onSelectCallback: PropTypes.func,
 };
 
-function CustomDatePicker({ onSelectCallback }) {
+function CustomDatePicker({ onSelectCallback, text, previous }) {
   const [startDate, setStartDate] = useState(new Date());
   const handleDateSelect = (date) => onSelectCallback(date);
   const handleDateChange = (date) => {
@@ -17,10 +17,12 @@ function CustomDatePicker({ onSelectCallback }) {
   return (
     <DatePicker
       className="custom-date-picker"
-      customInput={<TextField label={'Filter by date'} />}
+      customInput={<TextField label={text} />}
       selected={startDate}
+      name={text}
       onSelect={handleDateSelect} // when day is clicked
       onChange={handleDateChange} // only when value has changed
+      maxDate={new Date()}
     />
   );
 }

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import ReduxPaginationHandler from '../../../utils/reduxPaginationHandler';
 import shopService from './shopService';
 
 const initState = {
@@ -13,8 +14,8 @@ export const addShop = createAsyncThunk('addShop', async (newShop) => {
   return result;
 });
 
-export const getShops = createAsyncThunk('getShops', async () => {
-  const result = await shopService.getShops();
+export const getShops = createAsyncThunk('getShops', async (startingOffset) => {
+  const result = await shopService.getShops(startingOffset);
   return result;
 });
 
@@ -45,7 +46,7 @@ export const shopsSlice = createSlice({
       .addCase(getShops.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.shops = action.payload;
+        state.shops = ReduxPaginationHandler({ statePropTarget: state.shops, action });
       })
       .addCase(getShops.rejected, (state) => {
         state.isLoading = false;

@@ -7,7 +7,6 @@ export const CustomLoader = ({ targetReduxFeature }) => {
   const { isLoading } = useSelector((state) => (targetReduxFeature ? state[targetReduxFeature] : state));
 
   function handleLoaderRendering() {
-    console.log(`Target of ${targetReduxFeature} value is ${isLoading}`)
     if (isLoading === true) {
       return (
         <div className="loader-container">

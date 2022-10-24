@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import ReduxPaginationHandler from '../../../utils/reduxPaginationHandler';
 import productService from './productService';
 
 const initState = {
@@ -8,8 +9,8 @@ const initState = {
   isLoading: false,
 };
 
-export const getProducts = createAsyncThunk('getProducts', async () => {
-  const result = await productService.getProducts();
+export const getProducts = createAsyncThunk('getProducts', async (startingOffset) => {
+  const result = await productService.getProducts(startingOffset);
   return result;
 });
 
@@ -33,11 +34,6 @@ export const archiveProduct = createAsyncThunk('archiveProduct', async (productI
   return result;
 });
 
-export const filterByAvailability = createAsyncThunk('filterByAvailability', async (availability) => {
-  const filteredUProducts = await productService.filterByAvailability(availability);
-  return filteredUProducts;
-});
-
 export const productsSlice = createSlice({
   name: 'product',
   initialState: initState,
@@ -50,7 +46,7 @@ export const productsSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.products = action.payload;
+        state.products = ReduxPaginationHandler({ statePropTarget: state.products, action });
       })
       .addCase(getProducts.rejected, (state) => {
         state.isLoading = false;
@@ -86,7 +82,7 @@ export const productsSlice = createSlice({
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.products = action.payload;
+        // state.products = action.payload;
       })
       .addCase(deleteProduct.rejected, (state) => {
         state.isLoading = false;
@@ -98,21 +94,9 @@ export const productsSlice = createSlice({
       .addCase(archiveProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.products = action.payload;
+        // state.products = action.payload;
       })
       .addCase(archiveProduct.rejected, (state) => {
-        state.isLoading = false;
-        state.isError = true;
-      })
-      .addCase(filterByAvailability.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(filterByAvailability.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.products = action.payload;
-      })
-      .addCase(filterByAvailability.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });

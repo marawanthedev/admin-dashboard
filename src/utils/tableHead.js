@@ -1,6 +1,5 @@
 const generateTableHead = (names) => {
   const tableHead = [];
-
   names.forEach((name) => {
     const displayName = [...name];
     displayName[0] = displayName[0].toUpperCase();

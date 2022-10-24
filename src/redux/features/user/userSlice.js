@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { searchAllUtil } from '../../../utils/searchAll';
+import ReduxPaginationHandler from '../../../utils/reduxPaginationHandler';
 import userService from './userService';
 
 const initState = {
@@ -9,8 +10,8 @@ const initState = {
   isLoading: false,
 };
 
-export const getUsers = createAsyncThunk('getUsers', async () => {
-  const result = await userService.getUsers();
+export const getUsers = createAsyncThunk('getUsers', async (startingOffset) => {
+  const result = await userService.getUsers(startingOffset);
   return result;
 });
 
@@ -33,7 +34,6 @@ export const addUsersCSV = createAsyncThunk('addUsersCSV', async (data) => {
 
 export const filterByRole = createAsyncThunk('filterByRole', async (role) => {
   const filteredUsers = await userService.filterByRole(role);
-  console.log(filteredUsers);
   return filteredUsers;
 });
 
@@ -54,7 +54,8 @@ export const usersSlice = createSlice({
       .addCase(getUsers.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.users = action.payload;
+        // state.users=action.payload
+        state.users = ReduxPaginationHandler({ statePropTarget: state.users, action });
       })
       .addCase(getUsers.rejected, (state) => {
         state.isLoading = false;

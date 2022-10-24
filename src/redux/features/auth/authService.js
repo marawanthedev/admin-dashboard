@@ -14,9 +14,9 @@ const loginUser = async (userCredentials) => {
 
     const {
       token,
-      user: { firstName, role, email },
+      user: { firstName, role, email, username },
     } = res.data.data;
-    const userInAuth = { token, firstName, role, email };
+    const userInAuth = { token, firstName, role, email, username };
 
     if (user.remember) {
       localStorage.setItem('user', JSON.stringify({ ...userInAuth }));
@@ -30,12 +30,12 @@ const loginUser = async (userCredentials) => {
 const registerUser = async (userInfo) => {
   // todo using api calls later
   const userToPost = {
-    name: `${userInfo?.firstName}${userInfo?.lastName}`,
+    username: `${userInfo?.firstName}${userInfo?.lastName}`,
     password: userInfo.password,
     phoneNumber: userInfo.phoneNumber,
   };
 
-  console.log(userToPost);
+
   try {
     await http.post('/auth/signup', userToPost);
   } catch (error) {

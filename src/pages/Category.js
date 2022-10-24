@@ -32,7 +32,6 @@ export default function Category() {
     {
       text: 'Edit Category',
       callback: (currentItem) => {
-        console.log(currentItem);
         navigate('/manage-category', { state: { mode: 'edit', category: currentItem } });
       },
     },

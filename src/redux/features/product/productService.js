@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
 import { http } from '../../../utils/restAPI';
 import shops from '../../../_mock/shops';
+import FlattenObjectArray from '../../../utils/flatenedObjectsArray';
 
 const shopsHandle = shops.map((shop) => shop.handle);
 
@@ -19,93 +20,67 @@ const products = [...Array(24)].map(() => ({
 }));
 
 // const BASE_URL = '';
-const getProducts = async () => {
-  const productsRes = await http.get(`product/getAll?offset=0&limit=24&getProductDetails=`);
+const getProducts = async (startingOffset) => {
+  const productsRes = await http.get(`product/getAll?offset=${startingOffset}&limit=14&getProductDetails=&getCategory`);
   const productsData = await productsRes.data.data;
 
-  return productsData.map((product) => {
-    const productToReturn = {};
-    const shopHandle = 'shop handle';
-    // category data fetching
-    const category = 'category';
-    // already made sure that is product
-    productToReturn.title = product.title;
-    productToReturn.price = product.price.value;
-    productToReturn.quantity = product.quantity;
-    productToReturn.category = category;
-    productToReturn.availability = product.availability;  
-    productToReturn.images = product.images;
-    productToReturn.description = product.description;
-    productToReturn.shopHandle = shopHandle;
-    productToReturn.shippingDetails = product.shippingDetails;
+  return productsData.map(
+    ({ _id, title, price, quantity, availability, images, description, shippingDetails, category }) => {
+      const productToReturn = {};
+      const shopHandle = 'shop handle';
 
-    return productToReturn;
-  });
+      productToReturn.id = _id;
+      productToReturn.title = title;
+      productToReturn.price = price.value;
+      productToReturn.quantity = quantity;
+      productToReturn.category = FlattenObjectArray({ array: category, targetProp: 'name' });
+      productToReturn.availability = availability;
+      productToReturn.images = images;
+      productToReturn.description = description;
+      productToReturn.shopHandle = shopHandle;
+      productToReturn.shippingDetails = shippingDetails;
 
+      return productToReturn;
+    }
+  );
 };
 const addProduct = async (newProduct) => {
   const newProducts = products.push(newProduct);
+  const productRes = http.post('product/add', newProduct);
+  const productData = productRes.data.data;
+
+  console.log(productRes);
+  console.log(productData);
   return newProducts;
 };
 const editProduct = async (updatedProduct) => {
-  console.log('edit product');
   console.log(updatedProduct);
   return products;
 };
 
 const deleteProduct = async (productId) => {
-  const newProducts = products.filter((product) => product.id !== productId);
-  return newProducts;
+  console.log('deleting product with id of:', productId);
+  const deletedProductRes = await http.delete(`product/${productId}`)
+  const deletedProductData = deletedProductRes.data.data
+  console.log(deletedProductData)
+  // return newProducts;
 };
 
 const archiveProduct = async (productId) => {
-  console.log('archive product');
-  console.log(productId);
+  console.log('archiving product with id of:', productId);
+  const archivedProductRes = await http.put(`product/update/${productId}`, { status: "archived" })
+  const archivedProductData = archivedProductRes.data.data
+  console.log(archivedProductData)
+
   return products;
 };
-const filterByAvailability = async (availability) => {
-  const filteredUProducts = products.filter((product) => product.availability === availability);
-  return filteredUProducts;
-};
+
 const orderService = {
   getProducts,
   archiveProduct,
   addProduct,
   editProduct,
   deleteProduct,
-  filterByAvailability,
 };
 
 export default orderService;
-
-// if (products) {
-//   return products.forEach(async (product) => {
-//     const productToPush = {};
-//     const { shopId, categoryId } = product;
-
-//     // shop data fetching
-//     const shopRes = await http.get(`shop/get/${shopId}`);
-//     const shopHandle = shopRes?.data?.data?.handle;
-
-//     // category data fetching
-//     const categoryRes = await http.get(`category/get/${categoryId}`);
-//     const category = categoryRes?.data?.data?.name;
-
-//     // already made sure that is product
-//     productToPush.shopHandle = shopHandle;
-//     productToPush.category = category;
-//     productToPush.title = product.title;
-//     productToPush.description = product.description;
-//     productToPush.images = product.images;
-//     productToPush.availability = product.availability;
-//     productToPush.price = product.price;
-//     productToPush.quantity = product.quantity;
-//     productToPush.shippingDetails = product.shippingDetails;
-
-//     // return productToPush;
-//     productss.push(productToPush);
-//   });
-
-//   // products correct population
-//   // console.log(productss);
-// }

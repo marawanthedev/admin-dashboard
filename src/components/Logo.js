@@ -15,7 +15,7 @@ export default function Logo({ disabledLink = false, sx }) {
   const logo = (
     <Box sx={{ width: 100, height: 100, ...sx }}>
       <img
-        src={process.env.NODE_ENV === 'development' ? recraveLogo : dashboardIcon}
+        src={process.env.NODE_ENV === 'developmentz' ? recraveLogo : dashboardIcon}
         alt="logo"
         style={{ caretColor: 'transparent' }}
       />

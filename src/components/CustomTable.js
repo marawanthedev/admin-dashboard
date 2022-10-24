@@ -15,7 +15,6 @@ import {
   TablePagination,
   Grid,
 } from '@mui/material';
-
 import PropTypes from 'prop-types';
 // components
 import Page from './Page';
@@ -24,9 +23,6 @@ import Iconify from './Iconify';
 import SearchNotFound from './SearchNotFound';
 import { UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
 import TableListHead from '../sections/@dashboard/user/TableListHead';
-// todo update to actual image
-import sampleProduct from '../assets/airpdos.jfif';
-
 // ----------------------------------------------------------------------
 
 CustomTable.propTypes = {
@@ -66,14 +62,14 @@ export default function CustomTable({
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterAttribute, setFilterAttribute] = useState('');
+  const [filterAttribute, setFilterAttribute] = useState();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleFilterCallBackPassing = () => {
     if (filterButtonCallBack) {
       return () => {
-        setFilterAttribute('');
+        setFilterAttribute(undefined);
         filterButtonCallBack();
       };
     }
@@ -87,12 +83,13 @@ export default function CustomTable({
   };
 
   const handleChangePage = (event, newPage) => {
-    pageCallBack(newPage);
+    window.scroll(0, 150);
+    pageCallBack(newPage, rowsPerPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    pageCallBack(0);
+    pageCallBack(0, rowsPerPage);
   };
 
   const handleFilterByAttribute = (event) => {
@@ -122,7 +119,7 @@ export default function CustomTable({
       if (order !== 0) return order;
       return a[1] - b[1];
     });
-    if (query) {
+    if (query !== undefined) {
       return filter(array, (_user) => _user[searchAttribute].toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
@@ -158,14 +155,31 @@ export default function CustomTable({
     return null;
   };
 
+  const handleRowValueDisplay = (value) => {
+    if (value !== null && value !== '' && value !== undefined) return value;
+    return '-';
+  };
+
   const handleTableRendering = (row) =>
+
     Object.keys(row).map((key, index) => {
+
       if (!key.includes('image') && !key.includes('photo')) {
-        return (
-          <TableCell key={index} align="center">
-            {row[key]}
-          </TableCell>
-        );
+        if (!key.includes('id')) {
+          return (
+            <TableCell key={index} align="center">
+              {handleRowValueDisplay(row[key])}
+            </TableCell>
+          );
+        }
+        if (key.includes  ('id') && showId) {
+          return (
+            <TableCell key={index} align="center">
+              {handleRowValueDisplay(row[key])}
+            </TableCell>
+          );
+        }
+
       }
 
       const imagesThumbnail = row[key][0].thumbnail ? row[key][0].thumbnail : row[key][0].full;
@@ -224,6 +238,7 @@ export default function CustomTable({
               if (sampleItem.hasOwnProperty(searchAttribute)) {
                 handleFilterByAttribute(e);
               } else {
+                // eslint-disable-next-line no-alert
                 alert('Search Attribute is not valid, please choose attribute that exists in items');
               }
             }}
@@ -238,12 +253,15 @@ export default function CustomTable({
               <Table>
                 <TableListHead order={order} orderBy={orderBy} headLabel={head} onRequestSort={handleRequestSort} />
                 <TableBody>
-                  {filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  {filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                     const { id } = row;
-                    const rowDisplayInfo = JSON.parse(JSON.stringify(row));
-                    if (!showId) {
-                      delete rowDisplayInfo.id;
-                    }
+
+
+
+                    // customized way of using json parse
+                    // to consider undefined values as null to include the object key and avoid table structure mis-alignments
+                    const rowDisplayInfo = JSON.parse(JSON.stringify(row, (k, v) => (v === undefined ? null : v)));
+
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">
@@ -275,7 +293,7 @@ export default function CustomTable({
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[5, 10]}
             component="div"
             count={items.length}
             rowsPerPage={rowsPerPage}

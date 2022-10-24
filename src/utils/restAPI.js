@@ -38,13 +38,13 @@ class EasyAxios {
 
   // Make an http PUT Request
   async put(url, data) {
-    const res = await axios.put(url, data, { headers: this.getHeader() });
+    const res = await axios.put(`${this.baseUrl}${url}`, data, { headers: this.getHeader() });
     return res;
   }
 
   // delete request
   async delete(url) {
-    const res = await axios.delete(url, { headers: this.getHeader() });
+    const res = await axios.delete(`${this.baseUrl}${url}`, { headers: this.getHeader() });
     return res;
   }
 }

@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Form from '../components/form/form';
 import { editProduct, addProduct } from '../redux/features/product/productSlice';
 import { getShops } from '../redux/features/shops/shopSlice';
+import { getCategories } from '../redux/features/category/categorySlice';
 
 const textInputs = [
   {
@@ -16,11 +17,6 @@ const textInputs = [
     name: 'description',
     label: 'Description',
     modes: ['edit', 'add'],
-  },
-  {
-    name: 'images',
-    label: 'Images',
-    modes: ['edit'],
   },
   {
     name: 'price',
@@ -53,18 +49,19 @@ export default function ProductForm() {
   const location = useLocation();
   const mode = location?.state.mode;
   const productInfo = mode === 'edit' ? location.state.product : null;
-
   const formHeader = mode === 'add' ? 'Product Registration' : 'Product update';
   const formButton = { text: mode === 'add' ? 'Add Product' : 'Update Product', onClick: () => console.log('clicked') };
 
   const dispatch = useDispatch();
   const { shops } = useSelector((state) => state.shop);
+  const { categories } = useSelector((state) => state.category);
 
   /* eslint-disable */
   useEffect(() => {
     if (mode === 'add') {
       dispatch(getShops());
     }
+    dispatch(getCategories());
   }, []);
   /* eslint-enable */
 
@@ -72,42 +69,25 @@ export default function ProductForm() {
     {
       label: 'Shop',
       items: shops,
-      name: 'shop',
-      defaultValue: productInfo ? productInfo.shop : null,
+      name: 'shopId',
+      defaultValue: productInfo ? productInfo.shopId : null,
       to: '/manage-shop',
       modes: ['add'],
     },
     {
       label: 'Category',
       name: 'category',
-      modes: ['edit'],
+      modes: ['edit', 'add'],
 
       //   todo gotta use actual categories
-      items: [
-        {
-          id: 'food',
-          label: 'food',
-          name: 'food',
-        },
-        {
-          id: 'cloth',
-          label: 'cloth',
-          name: 'cloth',
-        },
-        {
-          id: 'handmade',
-          label: 'handmade',
-          name: 'handmade',
-        },
-      ],
-      defaultValue: productInfo ? productInfo.category : null,
+      items: [...categories],
+      defaultValue: productInfo?.category || null,
       to: '/manage-category',
     },
   ];
 
   const addProductSchema = Yup.object().shape({
-    select: Yup.string().required('Select value is required!'),
-
+    select: Yup.string().required('Both Select menus  value is required!'),
     title: Yup.string().required('title is Required').min(4),
     price: Yup.string().required('price  is Required').min(4),
     description: Yup.string().required('description is Required').min(4),

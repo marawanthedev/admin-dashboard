@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { sample } from 'lodash';
-import userService from '../user/userService';
-import shopService from '../shops/shopService';
+import { http } from '../../../utils/restAPI';
+import FlattenObjectArray from '../../../utils/flatenedObjectsArray';
 
 const orders = [...Array(24)].map(() => ({
   id: faker.datatype.number(),
@@ -19,7 +19,27 @@ const orders = [...Array(24)].map(() => ({
 
 // const BASE_URL = '';
 
-const getOrders = async () => orders;
+const getOrders = async () => {
+  const res = await http.get('order/getAll?getUserSummary&getShopSummary');
+  const orders = res.data.data;
+
+  return orders.map((order) => {
+    const orderToReturn = {};
+    orderToReturn.id = order._id;
+    orderToReturn.status = order.status;
+    orderToReturn.user = order.user.firstName;
+    orderToReturn.shop = order.shop.name;
+    orderToReturn.recipientsName = FlattenObjectArray({ array: order.recipients, targetProp: 'name' });
+    orderToReturn.recipientsAddress = FlattenObjectArray({ array: order.recipients, targetProp: 'address' });
+    orderToReturn.recipientsType = FlattenObjectArray({ array: order.recipients, targetProp: 'type' });
+    orderToReturn.quantity = order.totalQuantity;
+    orderToReturn.totalPrice = order.totalPrice;
+    orderToReturn.paid = String(order.paid);
+    orderToReturn.orderNo = order.orderNo;
+
+    return orderToReturn;
+  });
+};
 
 const orderService = {
   // functions

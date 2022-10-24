@@ -12,16 +12,18 @@ import fileService from '../utils/files';
 import { getShops, deleteShop, filterByDate, addShop } from '../redux/features/shops/shopSlice';
 import Protected from '../utils/protected';
 import { CustomLoader } from '../components/common/customLoader/customLoader';
+import compareDates from '../utils/compareDates';
 // ----------------------------------------------------------------------
 
 export default function Shop() {
   const navigate = useNavigate();
   const [showFilterPopUp, setShowFilterPopUp] = useState(false);
-  const [dateFilterValue, setDateFilterValue] = useState(new Date());
+  const [offset, setOffset] = useState(0);
   const [page, setPage] = useState(0);
-
   const dispatch = useDispatch();
   const { shops } = useSelector((state) => state.shop);
+  const [dateStartFilterValue, setDateStartFilterValue] = useState(new Date());
+  const [dateEndFilterValue, setDateEndFilterValue] = useState(new Date());
 
   // keys for table will only be based on recieved object keys to avoid having column with no value
   const keys = Object.keys(shops[0] || {}).filter((key) => key !== 'id');
@@ -55,14 +57,18 @@ export default function Shop() {
 
   /* eslint-disable */
   useEffect(() => {
-    dispatch(getShops());
-  }, []);
+    dispatch(getShops(offset));
+  }, [offset]);
   /* eslint-enable */
 
   const handleFilterSubmit = () => {
-    dispatch(filterByDate(dateFilterValue));
-    setPage(0);
-    setShowFilterPopUp(false);
+    if (!compareDates({ startDate: dateStartFilterValue, endDate: dateEndFilterValue })) {
+      alert('Start Date Has to be less than end Date');
+    } else {
+      dispatch(filterByDate({ startDate: dateStartFilterValue, endDate: dateEndFilterValue }));
+      setPage(0);
+      setShowFilterPopUp(false);
+    }
   };
 
   return (
@@ -73,7 +79,12 @@ export default function Shop() {
       <Protected allowedRoles={['admin']}>
         {showFilterPopUp ? (
           <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
-            <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+            <CustomDatePicker
+              previous
+              text={'Start Date'}
+              onSelectCallback={(value) => setDateStartFilterValue(value)}
+            />
+            <CustomDatePicker text={'End Date'} onSelectCallback={(value) => setDateEndFilterValue(value)} />
           </FilterPopUp>
         ) : null}
         <div className={`${showFilterPopUp ? 'blur' : null}`}>
@@ -87,7 +98,10 @@ export default function Shop() {
             topButtons={topButtons}
             filterButtonCallBack={() => setShowFilterPopUp(true)}
             page={page}
-            pageCallBack={(value) => setPage(value)}
+            pageCallBack={(pageNumber, rowsPerPage) => {
+              if ((pageNumber + 1) * rowsPerPage >= shops.length) setOffset(() => offset + 1);
+              setPage(pageNumber);
+            }}
           />
         </div>
       </Protected>

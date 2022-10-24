@@ -19,26 +19,29 @@ import fileService from '../../utils/files';
 import tableHeadService from '../../utils/tableHead';
 import './User.scss';
 import Protected from '../../utils/protected';
+import compareDates from '../../utils/compareDates';
 
 export default function User() {
   const dispatch = useDispatch();
   const [showEditPopUp, setShowEditPopUp] = useState(false);
   const [showFilterPopUp, setShowFilterPopUp] = useState(false);
   const [roleFilterValue, setRoleFilterValue] = useState();
-  const [dateFilterValue, setDateFilterValue] = useState(new Date());
+  const [dateStartFilterValue, setDateStartFilterValue] = useState();
+  const [dateEndFilterValue, setDateEndFilterValue] = useState();
+
   const [role, setRole] = useState();
   const [currentItem, setCurrentItem] = useState();
   const [page, setPage] = useState(0);
   const { users, isLoading } = useSelector((state) => state.user);
-
-  // keys for table will only be based on recieved object keys to avoid having column with no value
+  const [offset, setOffset] = useState(0);
+  // keys for table will only be based on received object keys to avoid having column with no value
   const keys = Object.keys(users[0] || {}).filter((key) => key !== 'id');
   const TABLE_HEAD = tableHeadService.generateTableHead(keys.length > 0 ? keys : []);
 
   /* eslint-disable */
   useEffect(() => {
-    dispatch(getUsers());
-  }, []);
+    dispatch(getUsers(offset));
+  }, [offset]);
   /* eslint-enable */
 
   const sideMenuButtonItems = [
@@ -51,6 +54,7 @@ export default function User() {
       callback: (currentItem) => {
         setCurrentItem(currentItem);
         setShowEditPopUp(true);
+        dispatch(editUserRole(currentItem.role));
       },
     },
   ];
@@ -80,8 +84,16 @@ export default function User() {
 
     const interval = setInterval(() => {
       if (!isLoading) {
-        dispatch(filterByDate(dateFilterValue));
-        clearInterval(interval);
+        if (!compareDates({ startDate: dateStartFilterValue, endDate: dateEndFilterValue })) {
+          alert('Start Date Has to be less than end Date');
+        } else {
+          dispatch(filterByDate({ startDate: dateStartFilterValue, endDate: dateEndFilterValue }));
+
+          setDateStartFilterValue(undefined);
+          setDateEndFilterValue(undefined);
+
+          clearInterval(interval);
+        }
       }
     }, 200);
   };
@@ -110,13 +122,19 @@ export default function User() {
     );
   }
   const handleFilterSubmit = () => {
-    if (dateFilterValue && roleFilterValue) {
+    if (dateStartFilterValue && dateEndFilterValue && roleFilterValue) {
       handleTasksInOrder();
     }
-    if (dateFilterValue && !roleFilterValue) {
-      dispatch(filterByDate(dateFilterValue));
+    if (dateStartFilterValue && dateEndFilterValue && !roleFilterValue) {
+      if (!compareDates({ startDate: dateStartFilterValue, endDate: dateEndFilterValue })) {
+        alert('Start Date Has to be less than end Date');
+      } else {
+        dispatch(filterByDate({ startDate: dateStartFilterValue, endDate: dateEndFilterValue }));
+        setDateStartFilterValue(undefined);
+        setDateEndFilterValue(undefined);
+      }
     }
-    if (!dateFilterValue && roleFilterValue) {
+    if (!dateStartFilterValue && !dateEndFilterValue && roleFilterValue) {
       dispatch(filterByRole(roleFilterValue));
     }
     setPage(0);
@@ -133,7 +151,12 @@ export default function User() {
           {showFilterPopUp ? (
             <FilterPopUp filterSubmitCallBack={handleFilterSubmit} closeBtnCallback={() => setShowFilterPopUp(false)}>
               {getRoleSelectMenu()}
-              <CustomDatePicker onSelectCallback={(value) => setDateFilterValue(value)} />
+              <CustomDatePicker
+                previous
+                text={'Start Date'}
+                onSelectCallback={(value) => setDateStartFilterValue(value)}
+              />
+              <CustomDatePicker text={'End Date'} onSelectCallback={(value) => setDateEndFilterValue(value)} />
             </FilterPopUp>
           ) : null}
 
@@ -165,7 +188,12 @@ export default function User() {
               topButtons={topButtons}
               filterButtonCallBack={() => setShowFilterPopUp(true)}
               page={page}
-              pageCallBack={(value) => setPage(value)}
+              pageCallBack={(pageNumber, rowsPerPage) => {
+                if ((pageNumber + 1) * rowsPerPage >= users.length) {
+                  setOffset(() => offset + 1);
+                }
+                setPage(pageNumber);
+              }}
               searchAllSubmitCallback={() => console.log('search in all')}
             />
           </div>

@@ -11,6 +11,7 @@ export default function UserMoreMenu({ menuItems, currentItem }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
+
   function handleMenuRendering() {
     if (menuItems.length > 0) {
       return (
