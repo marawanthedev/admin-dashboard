@@ -41,11 +41,12 @@ const getShops = async (startingOffset) => {
     const { _id, address, handle, name, collections } = shop;
     const shopToReturn = {};
 
-    shopToReturn.id = _id;
     shopToReturn.name = name;
     shopToReturn.collections = extractCollectionInfo(collections);
     shopToReturn.handle = handle;
     shopToReturn.address = Object.values(address).flat();
+    // id setting for crud calls
+    shopToReturn.id = _id;
 
     return shopToReturn;
   });

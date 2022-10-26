@@ -21,7 +21,6 @@ const getUsers = async (startingOffset) => {
   const usersDataToReturn = await Promise.all(
     usersData.map(async (user) => {
       const userToReturn = {};
-      userToReturn.id = user._id;
       userToReturn.name = user.username;
       userToReturn.phoneNumber = user.phoneNumber;
       userToReturn.role = user.role;
@@ -32,10 +31,14 @@ const getUsers = async (startingOffset) => {
       // messed up a bit
       // userToReturn.friendsNox = user.metrics?.friends;
 
-      const usersFriendsRes = await http.get(`/friend/friendFriendList/${userToReturn.id}`);
+      const usersFriendsRes = await http.get(`/friend/friendFriendList/${user._id}`);
       const usersFriendsData = usersFriendsRes.data.data;
       userToReturn.friendsNo = usersFriendsData.length;
 
+    // id setting for crud calls
+      userToReturn.id = user._id;
+
+      
       return userToReturn;
     })
   );

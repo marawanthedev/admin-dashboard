@@ -25,7 +25,6 @@ const getOrders = async () => {
 
   return orders.map((order) => {
     const orderToReturn = {};
-    orderToReturn.id = order._id;
     orderToReturn.status = order.status;
     orderToReturn.user = order.user.firstName;
     orderToReturn.shop = order.shop.name;
@@ -36,6 +35,9 @@ const getOrders = async () => {
     orderToReturn.totalPrice = order.totalPrice;
     orderToReturn.paid = String(order.paid);
     orderToReturn.orderNo = order.orderNo;
+    // id setting for crud calls
+    orderToReturn.id = order._id;
+
 
     return orderToReturn;
   });

@@ -29,7 +29,6 @@ const getProducts = async (startingOffset) => {
       const productToReturn = {};
       const shopHandle = 'shop handle';
 
-      productToReturn.id = _id;
       productToReturn.title = title;
       productToReturn.price = price.value;
       productToReturn.quantity = quantity;
@@ -39,6 +38,8 @@ const getProducts = async (startingOffset) => {
       productToReturn.description = description;
       productToReturn.shopHandle = shopHandle;
       productToReturn.shippingDetails = shippingDetails;
+    // id setting for crud calls
+      productToReturn.id = _id;
 
       return productToReturn;
     }
